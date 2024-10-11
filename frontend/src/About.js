@@ -230,9 +230,7 @@ const About = () => {
             <ContentContainer>
                 <Content>
                     <ContentH1>About Us</ContentH1>
-                    <ContentP>To be completely honest, I really don't know what to put here. I'm just going to yap yap yap.</ContentP>
-                    <ContentP>This reminds me of Eminem's lyrics in "Just Lose It". After roasting 8 Mile (ironically, his own movie), he proceeded to say "I don't have any lyrics for this part so chapa chapa chapa chapa chapa chapa." (he did not say "3kdeojodjwcoj)</ContentP>
-                    <ContentP>Oh, I made the gradient kinetic, that's pretty cool, no?</ContentP>
+                    <ContentP>Some more text goes here.</ContentP>
                 </Content>
                 <LogoContainer>
                     <Logo src={ncbiLogo} alt="NCBI Logo" />

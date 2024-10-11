@@ -307,7 +307,7 @@ const Home = () => {
             <HeroContainer>
                 <Hero>
                     <HeroH1>CHOFormer</HeroH1>
-                    <HeroP>I don't remember what this website does so just insert it here in minutes. For example: Compute XYZ in minutes. I think if I add some more text, it'll look better.</HeroP>
+                    <HeroP>Some text here.</HeroP>
                     <HeroButton to="/CHOFormer" style={{ marginRight: '1rem' }}>CHOFormer</HeroButton>
                     <HeroButton to="/choexp">CHOExp</HeroButton>
                     
@@ -382,7 +382,7 @@ const Home = () => {
                 {isMobile ? null : <HeroImage src={gene} alt="Gene" />}
             </HeroContainer>
             <Footer>
-                <FooterP>&copy; 2024 Dhruv Ramu. All rights reserved.</FooterP>
+                <FooterP>&copy; 2024 CHOFormer. All rights reserved.</FooterP>
             </Footer>
         </AppContainer>
     );
