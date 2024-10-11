@@ -1,0 +1,30 @@
+task: "train" # train, test, benchmarking (to be set up later)
+dna_fm_id: "zhihan1996/DNABERT-2-117M" # pretrained dna foundation model id for huggingface
+
+model:
+  input_size: 768
+  hidden_size: 384
+  num_layers: 2
+
+train:
+  n_epochs: 10
+  grad_accum_iter: 4
+  grad_clip: 5.0
+  epochs_per_val: 1
+  learning_rate: 3e-3
+  weight_decay: 1e-3
+  beta_1: 0.9
+  beta_2: 0.999
+
+data:
+  train_data_path: "data/rna/rna_normalized.csv"
+  val_data_path: "data/rna/rna_normalized.csv"
+  fasta_path: "data/rna/rna_expression_seqs"
+  batch_size: 32
+  num_workers: 8
+  max_length: 1024 # max sequence length to truncate/pad to
+
+log:
+  project: explstm
+  name: test_run
+  ckpt_path: "."

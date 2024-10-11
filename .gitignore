@@ -1,0 +1,4 @@
+.DS_STORE
+*.log
+*.log.*
+*DS_STORE
