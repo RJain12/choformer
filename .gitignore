@@ -1,6 +1,7 @@
 expression/env
 expression/outputs
-expression/wandb.DS_STORE
+expression/wandb
+.DS_STORE
 *.log
 *.log.*
 *DS_STORE
