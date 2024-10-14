@@ -5,14 +5,21 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Number of retries on failure
-MAX_RETRIES = 5
+MAX_RETRIES = 2
 # Delay factor for retries
 RETRY_DELAY = 5  # seconds
 
 # Function to fetch FASTA data for a single ID
 def fetch_fasta(id, gb_acc_value, fasta_file):
-    # Retry logic
-    for attempt in range(MAX_RETRIES):
+    # Check if the file already exists
+    if os.path.exists(fasta_file) and os.path.getsize(fasta_file) > 0:
+        print(f"FASTA file already exists for ID: {id}. Skipping download.")
+        # Return the existing content
+        with open(fasta_file, "r") as f:
+            return f.read().replace('\n', '')
+    
+    attempt = 0
+    while attempt < MAX_RETRIES:
         try:
             # Use efetch to fetch FASTA sequence and capture the result in a temporary variable
             print(f"Fetching FASTA for GB_ACC: {gb_acc_value} (Attempt {attempt + 1})")
@@ -36,8 +43,10 @@ def fetch_fasta(id, gb_acc_value, fasta_file):
         except subprocess.CalledProcessError as e:
             print(f"Error fetching FASTA for ID {id}: {e.stderr.decode('utf-8')}")
         
+        # Increment attempt counter
+        attempt += 1
         # Sleep before retrying to avoid overwhelming the server
-        time.sleep(RETRY_DELAY * (attempt + 1))
+        time.sleep(RETRY_DELAY * attempt)
     
     print(f"Failed to fetch FASTA for ID: {id} after {MAX_RETRIES} attempts.")
     return None
@@ -71,7 +80,7 @@ def process_rna_data():
                 continue
             
             if len(gb_acc) > 0:
-                gb_acc_value = gb_acc[0]
+                gb_acc_value = str(gb_acc[0])
                 fasta_file = os.path.join(fasta_dir, f"{id}.fasta")  # Path to the FASTA file
 
                 # Submit a task to fetch FASTA for each ID
@@ -81,9 +90,12 @@ def process_rna_data():
         
         # Process the completed futures as they finish
         for index, future in enumerate(as_completed(futures)):
-            fasta_sequences = future.result()
-            if fasta_sequences:
-                rna.at[index, 'fasta'] = fasta_sequences
+            try:
+                fasta_sequences = future.result()
+                if fasta_sequences:
+                    rna.at[index, 'fasta'] = fasta_sequences
+            except Exception as e:
+                print(f"An error occurred during processing: {e}")
 
     # Save the updated RNA data with the FASTA sequences
     rna.to_csv(os.path.join('..', 'data', "rna", 'rna_with_fasta.csv'), index=False)
