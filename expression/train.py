@@ -3,7 +3,7 @@ from torch import nn, Tensor, optim
 import torch.nn.functional as F
 from omegaconf import DictConfig
 from transformers import AutoModel
-import wandb
+# import wandb
 from tqdm import tqdm
 import hydra
 from dataset import RNASeq
@@ -22,16 +22,16 @@ class LSTMClassifier(nn.Module):
 
 def train(config):
     
-    wandb.login(key="key here or in env var")
-    wandb.init(project=config.log.project, name=config.log.name)
+    # wandb.login(key="b2e79ea06ca3e1963c1b930a9944bce6938bbb59")
+    # wandb.init(project=config.log.project, name=config.log.name)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # set up model
-    model = LSTMClassifier(**config.model).to(device)
-    dna_fm = AutoModel.from_pretrained(config.dna_fm).to(device)
+    dna_fm = AutoModel.from_pretrained(config.dna_fm_id, trust_remote_code=True).to(device)
+    model = LSTMClassifier(**config.model)
     
-    wandb.watch(model)
+    # wandb.watch(model)
     
     # setting up data
     data = RNASeq(tokenizer_path=config.dna_fm_id, **config.data)
@@ -45,7 +45,7 @@ def train(config):
     )
     
     
-    for epoch in range(len(config.train.n_epochs)):
+    for epoch in range(config.train.n_epochs):
         train_dl = data.train_dataloader()
         
         # training loop run
@@ -62,7 +62,7 @@ def train(config):
             # compute model loss 
             loss = F.mse_loss(y, target.to(device))
             loss.backward()
-            wandb.log({"train_loss": loss.item()})
+            # wandb.log({"train_loss": loss.item()})
             
             # run gradient update based on gradient accumulation value
             if i % config.train.grad_accum_iter == 0:
@@ -95,3 +95,6 @@ def main(config: DictConfig):
     if config.task == "train":
         train(config)
     else: raise NotImplementedError()
+    
+if __name__ == "__main__":
+    main()

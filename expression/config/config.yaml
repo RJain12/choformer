@@ -1,5 +1,5 @@
 task: "train" # train, test, benchmarking (to be set up later)
-dna_fm_id: "zhihan1996/DNABERT-2-117M" # pretrained dna foundation model id for huggingface
+dna_fm_id: "DNABERT-2-117M" # pretrained dna foundation model id for huggingface
 
 model:
   input_size: 768
@@ -13,8 +13,8 @@ train:
   epochs_per_val: 1
   learning_rate: 3e-3
   weight_decay: 1e-3
-  beta_1: 0.9
-  beta_2: 0.999
+  beta1: 0.9
+  beta2: 0.999
 
 data:
   train_data_path: "data/rna/rna_normalized.csv"

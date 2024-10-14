@@ -6,9 +6,10 @@ from functools import partial
 
 
 class RNASeqCore(Dataset):
-    def __init__(self, data_path: str = "data/rna/rna_normalized.csv", fasta_path: str = "data/rna/rna_expression_seqs"):
+    def __init__(self, data_path: str, fasta_path: str):
         super().__init__()
 
+        # opening the thing
         with open(data_path, "r") as f:
             values = f.read().split("\n")[1:]
             self.data = [(x.split(",")[0], float(x.split(",")[1])) for x in values]
@@ -24,15 +25,13 @@ class RNASeqCore(Dataset):
                 with open(f"{fasta_path}/{seq_name}.fasta", "r") as f:
                     self.seqs.append("".join(f.read().split("\n")[1:]))
             except:
-                print(f"fasta sequence not found ({seq_name})")
+                # print(f"fasta sequence not found ({seq_name})")
                 intron_idxs.append(ix)
                 # raise KeyError(f"fasta not found ({seq_name})")
             
         for i in reversed(range(len(intron_idxs))):
             del self.data[i]
-        
-        print(len(self.data))
-    
+            
     def __len__(self): return len(self.data)
     
     def __getitem__(self, ix: int):
@@ -41,7 +40,7 @@ class RNASeqCore(Dataset):
 
 def collate(batch: list[tuple[str, float]], tokenizer, max_length: int):
     y = torch.as_tensor([b[1] for b in batch])
-    X = tokenizer([b[0] for b in batch], padding="max_length", truncation=True, max_length=max_length, return_tensors="pt")
+    X = tokenizer([b[0] for b in batch], padding="max_length", truncation=True, max_length=max_length, return_tensors="pt").input_ids
     
     return X, y
 
@@ -55,7 +54,7 @@ class RNASeq:
         self.num_workers = num_workers
         self.max_length = max_length
         
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=True)
             
         
     def train_dataloader(self):
