@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=6,7 /usr/bin/python3 train.py

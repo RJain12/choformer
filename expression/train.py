@@ -7,6 +7,7 @@ import wandb
 from tqdm import tqdm
 import hydra
 from dataset import RNASeq
+from torch.nn.parallel import DistributedDataParallel as DDP
 
 
 class LSTMClassifier(nn.Module):
@@ -27,6 +28,8 @@ class LSTMClassifier(nn.Module):
         logit = self.lstm(x)[0].mean(dim=-2) # NOTE: Idea for pooling: add cls token at beginning and end and add - both final state representations, NVM AVERAGE POOLING!!
         return F.sigmoid(self.classifier(logit)) # sigmoid here for mse comparison
 
+
+def mae(y, target): return torch.abs(y-target).mean()
 
 def train(config):
     
@@ -68,9 +71,9 @@ def train(config):
             y = model(logits).squeeze()
             
             # compute model loss 
-            loss = F.mse_loss(y, target.to(device))
+            loss = mae(y, target.to(device))
             loss.backward()
-            # wandb.log({"train_loss": loss.item()})
+            wandb.log({"train_loss": loss.item(), "avg_pred": y.mean().item(), "avg_gt": target.mean().item(), "epoch": epoch})
             
             # run gradient update based on gradient accumulation value
             if i % config.train.grad_accum_iter == 0:
@@ -91,7 +94,7 @@ def train(config):
                 
                 # compute loss
                 loss = F.mse_loss(y, target.to(device))
-                # wandb.log({"val_loss": loss.item()})
+                wandb.log({"val_loss": loss.item(), "epoch": epoch})
                 
     # save model
     torch.save(model.state_dict(), f"{config.log.ckpt_path}/model.pt")

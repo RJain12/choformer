@@ -6,3 +6,6 @@ expression/wandb
 *.log.*
 *DS_STORE
 **/__pycache__
+expression/data/output.csv
+expression/data/*.csv
+expression/data/*.zip

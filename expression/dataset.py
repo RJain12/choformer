@@ -12,11 +12,11 @@ class RNASeqCore(Dataset):
         # opening the thing
         with open(data_path, "r") as f:
             values = f.read().split("\n")[1:]
-            self.data = [(x.split(",")[0], float(x.split(",")[1])) for x in values]
-            # self.data = []
-            # for x in values:
-            #     print(x.split(","))
-            #     self.data.append((x.split(",")[0], float(x.split(",")[1])))
+            # self.data = [(x.split(",")[0], float(x.split(",")[1])) for x in values]
+            self.data = []
+            for x in values:
+                try: self.data.append((x.split(",")[-1], float(x.split(",")[3])))
+                except: continue # empty line at end of each file
             
         # self.seqs = []
         # intron_idxs = []
@@ -44,6 +44,7 @@ class RNASeqCore(Dataset):
 def collate(batch: list[tuple[str, float]], tokenizer, max_length: int):
     y = torch.as_tensor([b[1] for b in batch])
     X = tokenizer([b[0] for b in batch], padding="max_length", truncation=True, max_length=max_length, return_tensors="pt").input_ids
+    # print(X.size(), y.size(), y)
     
     return X, y
 
@@ -61,10 +62,10 @@ class RNASeq:
             
         
     def train_dataloader(self):
-        return DataLoader(self.train, batch_size=self.batch_size, num_workers=self.num_workers, collate_fn=partial(collate, max_length=self.max_length, tokenizer=self.tokenizer))
+        return DataLoader(self.train, batch_size=self.batch_size, num_workers=self.num_workers, collate_fn=partial(collate, max_length=self.max_length, tokenizer=self.tokenizer), shuffle=True)
     
     def val_dataloader(self):
-        return DataLoader(self.val, batch_size=self.batch_size, num_workers=self.num_workers, collate_fn=partial(collate, max_length=self.max_length, tokenizer=self.tokenizer))
+        return DataLoader(self.val, batch_size=self.batch_size, num_workers=self.num_workers, collate_fn=partial(collate, max_length=self.max_length, tokenizer=self.tokenizer), shuffle=True)
     
 
 
