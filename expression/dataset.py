@@ -6,7 +6,7 @@ from functools import partial
 
 
 class RNASeqCore(Dataset):
-    def __init__(self, data_path: str, fasta_path: str):
+    def __init__(self, data_path: str):
         super().__init__()
 
         # opening the thing
@@ -18,24 +18,27 @@ class RNASeqCore(Dataset):
             #     print(x.split(","))
             #     self.data.append((x.split(",")[0], float(x.split(",")[1])))
             
-        self.seqs = []
-        intron_idxs = []
-        for ix, seq_name in tqdm(enumerate([dat[0] for dat in self.data]), desc="Extracting sequence data"):
-            try:
-                with open(f"{fasta_path}/{seq_name}.fasta", "r") as f:
-                    self.seqs.append("".join(f.read().split("\n")[1:]))
-            except:
-                # print(f"fasta sequence not found ({seq_name})")
-                intron_idxs.append(ix)
-                # raise KeyError(f"fasta not found ({seq_name})")
+        # self.seqs = []
+        # intron_idxs = []
+        # for ix, seq_name in tqdm(enumerate([dat[0] for dat in self.data]), desc="Extracting sequence data"):
+        #     try:
+        #         with open(f"{fasta_path}/{seq_name}.fasta", "r") as f:
+        #             self.seqs.append("".join(f.read().split("\n")[1:]))
+        #     except:
+        #         # print(f"fasta sequence not found ({seq_name})")
+        #         intron_idxs.append(ix)
+        #         # raise KeyError(f"fasta not found ({seq_name})")
+        
             
-        for i in reversed(range(len(intron_idxs))):
-            del self.data[i]
+        # for i in reversed(range(len(intron_idxs))):
+        #     del self.data[i]
+        
+        
             
     def __len__(self): return len(self.data)
     
     def __getitem__(self, ix: int):
-        return self.seqs[ix], self.data[ix][1]
+        return self.data[ix]
 
 
 def collate(batch: list[tuple[str, float]], tokenizer, max_length: int):
@@ -46,9 +49,9 @@ def collate(batch: list[tuple[str, float]], tokenizer, max_length: int):
 
 
 class RNASeq:
-    def __init__(self, train_data_path: str, val_data_path: str, fasta_path: str, batch_size: int, tokenizer_path: str, max_length: int, num_workers: int = 8):
-        self.train = RNASeqCore(train_data_path, fasta_path)
-        self.val = RNASeqCore(val_data_path, fasta_path)
+    def __init__(self, train_data_path: str, val_data_path: str, batch_size: int, tokenizer_path: str, max_length: int, num_workers: int = 8):
+        self.train = RNASeqCore(train_data_path)
+        self.val = RNASeqCore(val_data_path)
         
         self.batch_size = batch_size
         self.num_workers = num_workers

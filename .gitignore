@@ -5,3 +5,4 @@ expression/wandb
 *.log
 *.log.*
 *DS_STORE
+**/__pycache__

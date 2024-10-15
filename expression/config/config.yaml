@@ -1,5 +1,5 @@
 task: "train" # train, test, benchmarking (to be set up later)
-dna_fm_id: "DNABERT-2-117M" # pretrained dna foundation model id for huggingface
+dna_fm_id: "dnabert2" # pretrained dna foundation model id for huggingface
 
 model:
   input_size: 768
@@ -17,9 +17,8 @@ train:
   beta2: 0.999
 
 data:
-  train_data_path: "data/rna/rna_normalized.csv"
-  val_data_path: "data/rna/rna_normalized.csv"
-  fasta_path: "data/rna/rna_expression_seqs"
+  train_data_path: "data/test_cleaned.csv"
+  val_data_path: "data/test_cleaned.csv"
   batch_size: 32
   num_workers: 8
   max_length: 1024 # max sequence length to truncate/pad to
