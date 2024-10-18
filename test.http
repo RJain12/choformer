@@ -1,0 +1,27 @@
+@baseUrl = http://localhost:8000
+
+### Test JSON input
+POST {{baseUrl}}/process
+Content-Type: application/json
+
+{
+    "text": "This is a test sentence for the text generation model."
+}
+
+### Test CSV file upload
+POST {{baseUrl}}/process_csv
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test.csv"
+Content-Type: text/csv
+
+This is the first sentence in the CSV file.
+This is the second sentence in the CSV file.
+This is the third sentence in the CSV file.
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Test with no input (should return an error)
+POST {{baseUrl}}/process
+Content-Type: application/json
