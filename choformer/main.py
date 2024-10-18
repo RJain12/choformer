@@ -68,7 +68,7 @@ def train(train_loader, val_loader, num_epochs, optimizer, device, choformer_mod
         avg_train_loss = total_loss / len(train_loader)
         avg_train_ppl = total_ppl / len(train_loader)
         wandb.log({"epoch": {epoch+1}, "train_loss": avg_train_loss, "train_ppl": avg_train_ppl})
-        train_bar.close()
+    train_bar.close()
 
 
 def _validation(val_loader, choformer_model, esm_model, device):
