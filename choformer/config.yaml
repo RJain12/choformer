@@ -1,21 +1,29 @@
 task: "train" # train, test, benchmarking (to be set up later)
 dna_fm_id: "zhihan1996/DNABERT-2-117M" # pretrained dna foundation model id for huggingface
 
+decoder_model:
+  protein_embedding_size: 
+  decoder_size:
+  dna_seq_len:
+  dna_model_path: 
+  layers: 6
+  heads: 8
+  dropout: 0.1
+
+decoder_hparams:
+  beta1: 
+  beta2: 
+  num_epochs: 10
+  lr: 5e-4
+
+
 lstm_model:
   input_size: 768
   hidden_size: 384
   num_layers: 2
 
-decoder:
-  protein_embedding_size: 
-  decoder_hidden_size:
-  max_dna_seq_len:
-  layers: 6
-  heads: 8
-  dimension: 
-  dropout: 0.1
-
-train:
+lstm_train:
+  batch_size: 16
   n_epochs: 10
   grad_accum_iter: 4
   grad_clip: 5.0
