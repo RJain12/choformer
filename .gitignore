@@ -9,3 +9,4 @@ expression/wandb
 expression/data/output.csv
 expression/data/*.csv
 expression/data/*.zip
+node_modules

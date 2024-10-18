@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './Home';
 import About from './About';
-import Tool from './Tool';
 import CHOFormer from './CHOFormer';
 import CHOExp from './CHOExp';
 const App = () => {

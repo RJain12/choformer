@@ -1,0 +1,183 @@
+.app {
+  background: linear-gradient(270deg, #1c5ee1, hsl(0, 0%, 0%));
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  color: #fff;
+  min-height: 100vh;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: transparent;
+  color: #fff;
+  padding: 1rem 0;
+  width: 100%;
+  text-align: left;
+}
+
+.navUl {
+  list-style: none;
+  display: flex;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.navLi {
+  margin: 0 1rem;
+}
+
+.navA {
+  color: #fff;
+  text-decoration: none;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.predictorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 600px;
+}
+
+.content {
+  text-align: left;
+  padding: 2rem 0;
+  background: transparent;
+  width: 100%;
+  max-width: 600px;
+}
+
+.contentH1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2.5rem;
+  text-align: left;
+}
+
+.contentP {
+  font-size: 1.5rem;
+  margin: 0 0 2rem 0;
+  text-align: left;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border: 1px solid #1c5ee1;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: transparent;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.3s;
+  min-height: 150px;
+}
+
+.textarea:focus {
+  border-color: #fff;
+  outline: none;
+}
+
+.loadingBar {
+  width: 100%;
+  height: 1rem;
+  background-color: #ccc;
+  margin: 1rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.loadingProgress {
+  height: 100%;
+  background-color: #1c5ee1;
+  transition: width 0.1s ease-in-out;
+  width: attr(data-progress number, 0) '% ';
+}
+
+.outputContainer {
+  display: flex;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.output {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: transparent;
+  color: #fff;
+  width: 100%;
+  max-width: 800px;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.footer {
+  text-align: left;
+  padding: 1rem 0;
+  background: transparent;
+  color: #fff;
+  width: 100%;
+}
+
+.footerP {
+  margin-top: -25px;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  background-color: #1c5ee1;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding-bottom: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  transition: background-color 0.3s, transform 0.3s;
+  font-size: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  width: 633px;
+}
+
+.button:hover {
+  background-color: #fff;
+  color: black;
+  transform: scale(1.05);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.customFileButton {
+  padding: 0.5rem 1rem;
+  background-color: #1c5ee1;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.3s, transform 0.3s;
+  font-size: 1rem;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+}
+
+.fileName {
+  font-size: 1rem;
+  color: #fff;
+}
