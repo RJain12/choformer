@@ -1,5 +1,5 @@
-# choformer
-cho transformer
+# CHOFormer
+cho transformer (WIP, EST COMPLETION: 10/20)
 
 ## rna seq data
 26795 genes -> 19918 genes (nonzero) -> 13253 (top 66% and ones not <-3 stdev >3 stdev)
