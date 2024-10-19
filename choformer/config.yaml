@@ -3,17 +3,17 @@ dna_fm_id: "zhihan1996/DNABERT-2-117M" # pretrained dna foundation model id for 
 
 decoder_model:
   protein_embedding_size: 320
-  decoder_size: 512
-  dna_seq_len: 1000 # max number of dna tokens for truncation/padding
+  decoder_size: 128
+  dna_seq_len: 20 # max number of dna tokens for truncation/padding
   dna_model_path: "zhihan1996/DNABERT-2-117M"
-  layers: 6
-  heads: 8
+  layers: 2
+  heads: 4
   dropout: 0.1
 
 decoder_hparams:
   beta1: 0.9
   beta2: 0.999
-  num_epochs: 10
+  num_epochs: 3
   lr: 5e-4
 
 
@@ -38,6 +38,8 @@ data:
   train_data_path: "/Users/Shrey/Shrey_Work/Duke/!Research/ChoFormer/choformer/train.csv"
   val_data_path: "/Users/Shrey/Shrey_Work/Duke/!Research/ChoFormer/choformer/val.csv"
   test_data_path: "/Users/Shrey/Shrey_Work/Duke/!Research/ChoFormer/choformer/test.csv"
+  protein_max_length: 1024
+  tokenizer_length: 93
   batch_size: 16
   num_workers: 8
 
