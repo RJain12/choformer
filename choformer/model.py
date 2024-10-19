@@ -210,28 +210,38 @@ class DNADecoder(nn.Module):
             #"expression": predicted_expression
         } 
     
-    def generate(self, protein_embeddings, labels, max_length=None):
+    def generate(self, protein_embeddings, labels, max_length=None, tokens_per_step=3):
         bsz = protein_embeddings.size(0)
         sequence_lengths = (labels != self.dna_tokenizer.vocab['[PAD]']).sum(dim=1)
+        max_seq_len = sequence_lengths.max().item()
 
         all_gen_tokens = []
         for i in range(bsz):
-            generated_tokens = torch.full((1, 1), self.dna_tokenizer.vocab['[CLS]'], dtype=torch.long).to(protein_embeddings.device)
-            seq_len = sequence_lengths[i].item()-1
+            generated_tokens = torch.full((1, 1), self.dna_tokenizer.vocab['[CLS]'], dtype=torch.long, device=protein_embeddings.device)
+            seq_len = sequence_lengths[i].item() - 1
 
-            # Generate tokens equivalent to the sequence length
-            for _ in range(seq_len):
+            # Generate tokens in batches
+            for step in range(0, seq_len, tokens_per_step):
+                # Determine the number of tokens to generate in this step
+                tokens_to_generate = min(tokens_per_step, seq_len - step)
+
+                # Forward pass
                 outputs = self.forward(protein_embeddings=protein_embeddings[i:i+1], labels=generated_tokens)
-                next_token_logits = outputs['logits'][:, -1, :]
+                next_token_logits = outputs['logits'][:, -tokens_to_generate:, :]
+
+                # Generate padding mask
                 padding_mask = self._generate_padding_mask(generated_tokens).to(protein_embeddings.device)
-                next_token_logits.masked_fill_(padding_mask[:, -1].unsqueeze(1), float('-inf'))
+                padding_mask = padding_mask[:, -tokens_to_generate:]
 
-                # Select the next most probable token
-                next_token = torch.argmax(next_token_logits, dim=-1).unsqueeze(-1)
-                generated_tokens = torch.cat([generated_tokens, next_token], dim=-1)
+                # Apply padding mask
+                next_token_logits.masked_fill_(padding_mask.unsqueeze(-1), float('-inf'))
 
-            all_gen_tokens.append(generated_tokens[:, 1:])
-        
+                # Select the most probable tokens
+                next_tokens = torch.argmax(next_token_logits, dim=-1)
+                generated_tokens = torch.cat([generated_tokens, next_tokens], dim=1)
+
+            all_gen_tokens.append(generated_tokens[:, 1:seq_len+1])  # Exclude [CLS] and trim to sequence length
+
         # Decode token IDs to codons
         generated_sequences = [self.dna_tokenizer.decode(gen_tokens)[0] for gen_tokens in all_gen_tokens]
 
@@ -239,5 +249,36 @@ class DNADecoder(nn.Module):
             "logits": outputs['logits'],
             "generated_sequences": generated_sequences,
             "loss": outputs['loss']
-            #"predicted_expression": predicted_expression
         }
+    
+    # def generate(self, protein_embeddings, labels, max_length=None):
+    #     bsz = protein_embeddings.size(0)
+    #     sequence_lengths = (labels != self.dna_tokenizer.vocab['[PAD]']).sum(dim=1)
+
+    #     all_gen_tokens = []
+    #     for i in range(bsz):
+    #         generated_tokens = torch.full((1, 1), self.dna_tokenizer.vocab['[CLS]'], dtype=torch.long).to(protein_embeddings.device)
+    #         seq_len = sequence_lengths[i].item()-1
+
+    #         # Generate tokens equivalent to the sequence length
+    #         for _ in range(seq_len):
+    #             outputs = self.forward(protein_embeddings=protein_embeddings[i:i+1], labels=generated_tokens)
+    #             next_token_logits = outputs['logits'][:, -1, :]
+    #             padding_mask = self._generate_padding_mask(generated_tokens).to(protein_embeddings.device)
+    #             next_token_logits.masked_fill_(padding_mask[:, -1].unsqueeze(1), float('-inf'))
+
+    #             # Select the next most probable token
+    #             next_token = torch.argmax(next_token_logits, dim=-1).unsqueeze(-1)
+    #             generated_tokens = torch.cat([generated_tokens, next_token], dim=-1)
+
+    #         all_gen_tokens.append(generated_tokens[:, 1:])
+        
+    #     # Decode token IDs to codons
+    #     generated_sequences = [self.dna_tokenizer.decode(gen_tokens)[0] for gen_tokens in all_gen_tokens]
+
+    #     return {
+    #         "logits": outputs['logits'],
+    #         "generated_sequences": generated_sequences,
+    #         "loss": outputs['loss']
+    #         #"predicted_expression": predicted_expression
+    #     }
