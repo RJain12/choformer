@@ -2,17 +2,17 @@ task: "train" # train, test, benchmarking (to be set up later)
 dna_fm_id: "zhihan1996/DNABERT-2-117M" # pretrained dna foundation model id for huggingface
 
 decoder_model:
-  protein_embedding_size: 
-  decoder_size:
-  dna_seq_len:
-  dna_model_path: 
+  protein_embedding_size: 320
+  decoder_size: 512
+  dna_seq_len: 1000 # max number of dna tokens for truncation/padding
+  dna_model_path: "zhihan1996/DNABERT-2-117M"
   layers: 6
   heads: 8
   dropout: 0.1
 
 decoder_hparams:
-  beta1: 
-  beta2: 
+  beta1: 0.9
+  beta2: 0.999
   num_epochs: 10
   lr: 5e-4
 
@@ -35,14 +35,13 @@ lstm_train:
   ckpt_path: ""
 
 data:
-  train_data_path: "data/rna/rna_normalized.csv"
-  val_data_path: "data/rna/rna_normalized.csv"
-  fasta_path: "data/rna/rna_expression_seqs"
-  batch_size: 32
+  train_data_path: "/Users/Shrey/Shrey_Work/Duke/!Research/ChoFormer/choformer/train.csv"
+  val_data_path: "/Users/Shrey/Shrey_Work/Duke/!Research/ChoFormer/choformer/val.csv"
+  test_data_path: "/Users/Shrey/Shrey_Work/Duke/!Research/ChoFormer/choformer/test.csv"
+  batch_size: 16
   num_workers: 8
-  max_length: 1024 # max sequence length to truncate/pad to
 
 log:
   project: explstm
   name: test_run
-  ckpt_path: "."
+  ckpt_path: "./ckpts"

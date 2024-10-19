@@ -1,10 +1,9 @@
 import torch
 import math
-import config
 import torch.nn.functional as F
 import torch.nn as nn
 from esm_utils import ESMWrapper
-from lstm_train import LSTMClassifier
+#from lstm_train import LSTMClassifier
 from torch.nn import TransformerDecoderLayer, TransformerDecoder
 from transformers import AutoModel, AutoTokenizer
 
@@ -83,102 +82,7 @@ from transformers import AutoModel, AutoTokenizer
 #         protein_embedding = self.esm_api(protein_sequence)
 #         return protein_embedding
 
-class DNADecoder(nn.Module):
-    def __init__(self, protein_embedding_size, decoder_size, dna_seq_len,
-                 dna_vocab_size, dna_model_path,
-                 num_layers, nhead, dropout):
-        super().__init__()
-        # init dna bert tokenizer
-        self.dna_tokenizer = AutoTokenizer.from_pretrained(dna_model_path)
-
-        # length of dna sequence to be optimized
-        self.dna_seq_len = dna_seq_len
-        # number of unique dna bert tokens
-        self.dna_vocab_size = dna_vocab_size
-
-        # simple MLP for mapping protein embeddings to decoder size (in between encoder/decoder stack)
-        self.protein_to_deocder = nn.Sequential([
-            nn.Linear(protein_embedding_size, decoder_size*2),
-            nn.ReLU(),
-            nn.Linear(decoder_size*2, decoder_size)
-        ])
-        
-        # dna embeddings and positional information
-        self.dna_embeddings = nn.Embedding(dna_vocab_size, decoder_size)
-        self.pos_embedding = PositionalEmbedding(d_model=decoder_size, max_len=dna_seq_len, dropout=dropout)
-
-        # decoder stack for the choformer model
-        decoder_layer = TransformerDecoderLayer(
-            d_model=decoder_size,
-            nhead=nhead,
-            dropout=dropout,
-            batch_first=True
-        )
-        self.decoder = TransformerDecoder(decoder_layer, num_layers)
-
-        # Mapping decoder size to the dna vocab size – create probability distribution over each token
-        self.decoder_to_dna_vocab = nn.Linear(decoder_size, dna_vocab_size)
-        self.register_buffer("mask", self._generate_square_mask(size=dna_seq_len))
-
-        self.loss_fn = nn.CrossEntropyLoss()
     
-    def _generate_square_mask(self, size):
-        """Causual masking to pay attention to future tokens"""
-        mask = (torch.triu(torch.ones(size, size)) == 1).transpose(0, 1)
-        mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
-        return mask
-    
-    def _generate_padding_mask(self, input_token):
-        pad_token = self.dna_tokenizer.pad_token_id
-        return (input_token != pad_token).unsqueeze(1)
-
-
-    def forward(self, protein_embeddings, input_ids, labels=None):
-        seq_len = input_ids.size(1)
-
-        # map protein embeddings to decoder dimension size
-        protein_embeddings = self.protein_to_deocder(protein_embeddings)
-
-        dna_embeddings = self.dna_embeddings(input_ids)
-        dna_embeddings = self.pos_embedding(dna_embeddings)
-
-        padding_mask = self._generate_padding_mask(input_ids)
-        causual_mask = self._generate_square_mask(seq_len).to(protein_embeddings.device)
-
-        decoder_out = self.decoder(dna_embeddings,
-                                   protein_embeddings,
-                                   tgt_mask=causual_mask,
-                                   tgt_key_padding_mask=~padding_mask.squeeze(1))
-        
-        logits = self.decoder_to_dna_vocab(decoder_out)
-
-        loss = None
-        if labels is not None:
-            loss = self.loss_fn(logits.view(-1, self.dna_vocab_size), labels.view(-1))
-
-        return {
-            "loss": loss,
-            "logits": logits
-        } 
-    
-    def generate(self, protein_embeddings, max_length=None):
-        bsz = protein_embeddings.size(0)
-        input_ids = torch.full((bsz, 1), self.dna_tokenizer.cls_token_id, dtype=torch.long).to(protein_embeddings.device)
-
-        for _ in range(max_length - 1):
-            outputs = self.forward(protein_embeddings=protein_embeddings, input_ids=input_ids)
-            next_token_logits = outputs.logits[:, -1, :]
-            next_token = torch.argmax(next_token_logits, dim=-1).unsqueeze(-1)
-            input_ids = torch.cat([input_ids, next_token], dim=-1)
-        
-        generated_sequences = self.dna_tokenizer.batch_decode(input_ids, skip_special_tokens=True)
-
-        return {
-            "logits": outputs.logits,
-            "generated_sequences": generated_sequences,
-            "loss": outputs.loss
-        }
-
 class PositionalEmbedding(nn.Module):
     def __init__(self, d_model, max_len=512, dropout=0.1):
         super(PositionalEmbedding, self).__init__()
@@ -195,3 +99,135 @@ class PositionalEmbedding(nn.Module):
     def forward(self, x):
         x = x + self.pe[:x.size(0), :]
         return self.dropout(x)
+
+class DNADecoder(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        # get parameters from config
+        self.config = config
+        protein_embedding_size = config.decoder_model.protein_embedding_size
+        decoder_size = config.decoder_model.decoder_size
+        dna_seq_len = config.decoder_model.dna_seq_len
+        dna_model_path = config.decoder_model.dna_model_path
+        num_layers = config.decoder_model.layers
+        nhead = config.decoder_model.heads
+        dropout = config.decoder_model.dropout
+
+
+        self.dna_tokenizer = AutoTokenizer.from_pretrained(dna_model_path)
+
+        # max length of dna sequence
+        self.dna_seq_len = dna_seq_len
+        # number of unique dna bert tokens
+        self.dna_vocab_size = self.dna_tokenizer.vocab_size
+
+        # simple MLP for mapping protein embeddings to decoder size (in between encoder/decoder stack)
+        self.protein_to_deocder = nn.Sequential(
+            nn.Linear(protein_embedding_size, decoder_size*2),
+            nn.ReLU(),
+            nn.Linear(decoder_size*2, decoder_size)
+        )
+        
+        # dna embeddings and positional information
+        self.dna_embeddings = nn.Embedding(num_embeddings=self.dna_vocab_size,
+                                           embedding_dim=decoder_size,
+                                           padding_idx=self.dna_tokenizer.pad_token_id)
+        self.pos_embedding = PositionalEmbedding(d_model=decoder_size, max_len=dna_seq_len, dropout=dropout)
+
+        # decoder stack for the choformer model
+        decoder_layer = TransformerDecoderLayer(
+            d_model=decoder_size,
+            nhead=nhead,
+            dropout=dropout,
+            batch_first=True
+        )
+        self.decoder = TransformerDecoder(decoder_layer, num_layers)
+
+        # Mapping decoder size to the dna vocab size – create probability distribution over each token
+        self.decoder_to_dna_vocab = nn.Linear(decoder_size, self.dna_vocab_size)
+        self.register_buffer("mask", self._generate_causal_mask(size=dna_seq_len))
+
+        # Create simple MLP to predict expression
+        self.predict_expression = nn.Sequential(
+            nn.Linear(decoder_size, decoder_size // 2),
+            nn.ReLU(),
+            nn.Linear(decoder_size // 2, 1),
+            nn.Sigmoid()
+        )
+
+        self.loss_fn = nn.CrossEntropyLoss(ignore_index=self.dna_tokenizer.pad_token_id)
+    
+    def _generate_causal_mask(self, size):
+        """
+        Creates a causal mask to prevent the model from "peeking" forward
+        Args:
+            - size (int): size of mask to be created
+        
+        Returns:
+            - mask (torch.Tensor): causal mask, an upper triangular matrix of size [seq_len x seq_len]
+        """
+        mask = (torch.triu(torch.ones(size, size)) == 1).transpose(0, 1)
+        mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
+        return mask
+    
+    def _generate_padding_mask(self, input_token):
+        pad_token = self.dna_tokenizer.pad_token_id
+        return (input_token == pad_token)
+
+
+    def forward(self, protein_embeddings, labels):
+        bsz, seq_len = labels.size(0), labels.size(1)
+
+        # map protein embeddings to decoder dimension size
+        protein_embeddings = self.protein_to_deocder(protein_embeddings)
+
+        padding_mask = self._generate_padding_mask(labels).to(protein_embeddings.device) # [bsz x seq_len]
+        causual_mask = self._generate_causal_mask(seq_len).to(protein_embeddings.device) # [seq_len x seq_len]
+
+        print(padding_mask)
+
+        print(padding_mask.size())
+        print(causual_mask.size())
+        print(protein_embeddings.size())
+
+        decoder_out = self.decoder(tgt=labels.float(),
+                                   memory=protein_embeddings.float(),
+                                   tgt_mask=causual_mask,
+                                   tgt_is_causal=True,
+                                   tgt_key_padding_mask=padding_mask)
+        
+        logits = self.decoder_to_dna_vocab(decoder_out)
+        predicted_expression = self.predict_expression(decoder_out)
+
+        loss = None
+        if labels is not None:
+            loss = self.loss_fn(logits.view(-1, self.dna_vocab_size), labels.view(-1))
+
+        return {
+            "loss": loss,
+            "logits": logits,
+            "expression": predicted_expression
+        } 
+    
+    def generate(self, protein_embeddings, labels, max_length=None):
+        max_length = self.config.decoder_model.dna_seq_len
+        bsz = protein_embeddings.size(0)
+        generated_tokens = torch.full((bsz, 1), self.dna_tokenizer.cls_token_id, dtype=torch.long).to(protein_embeddings.device)
+
+        for i in range(max_length - 1):
+            outputs = self.forward(protein_embeddings=protein_embeddings, labels=labels)
+            next_token_logits = outputs.logits[:, -1, :]
+            next_token = torch.argmax(next_token_logits, dim=-1).unsqueeze(-1)
+            generated_tokens = torch.cat([generated_tokens, next_token], dim=-1)
+
+            if i == max_length-2:
+                predicted_expression = outputs.predicted_expression
+        
+        generated_sequences = self.dna_tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
+
+        return {
+            "logits": outputs.logits,
+            "generated_sequences": generated_sequences,
+            "loss": outputs.loss,
+            "predicted_expression": predicted_expression
+        }
