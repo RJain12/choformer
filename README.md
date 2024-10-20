@@ -8,8 +8,8 @@
 
 - ### <h3> <a href="#about">About</a></h3>
 - ### <h3> <a href="#usetool">How To Use This Tool</a> </h3>
-- ### <h3> <a href="#benchmarking">Benchmarking</a> </h3>
-- ### <h3> <a href="#training">Training</a> </h3>
+- ### <h3> <a href="#benchmark">Benchmarking</a> </h3>
+- ### <h3> <a href="#training">Training and Data Preprocessing</a> </h3>
 - ### <h3> <a href="#license">License</a> </h3>
 
 ## <h2 id="about">About</a> </h2>
@@ -19,32 +19,55 @@ The genetic code is degenerate; there are 61 sense codons encoding for only 20 s
 <!-- CHOFormer is a state-of-the-art **transformer decoder model** designed to optimize codon sequences for enhanced protein expression in Chinese Hamster Ovary (CHO) cells. Today, nearly 70% of recombinant pharmaceuticals are manufactured using the CHO genome in their research and development. This tool addresses the challenge of low recombinant protein yields in CHO cells, critical for drug manufacturing, particularly in the development of monoclonal antibodies and other therapeutic proteins. -->
 
 <!-- Codon optimization, currently time-consuming in laboratory environments, is significantly expedited by using CHOFormer, potentially shortening the optimization timeline from **months to minutes**. -->
-![public/architecture.png](public\architecture.png)
+![public/architecture.png](public/architecture.png)
 ## <h2 id="usetool">How To Use This Tool</a> </h2>
 ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=flat&logo=flask&logoColor=white) ![Next JS](https://img.shields.io/badge/Next-black?style=flat&logo=next.js&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=flat&logo=python&logoColor=ffdd54) ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=flat&logo=amazon-aws&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=flat&logo=PyTorch&logoColor=white)
 
 Our [website](https://choformer.com) allows for the easy usage of the tool.
 For **CHOFormer**, simply input the protein sequence and the optimized DNA sequence will be outputted—it can be downloaded as a FASTA or copied directly.
+![public/choforma_screenshot.png](public/choforma_screenshot.png)
 For **CHOExp**, upload or paste the DNA sequence; the output will be the protein expression (normalized between 0 and 1).
+![public/choexp_screenshot.png](public/choexp_screenshot.png)
 
-## Technical Overview
-1. Accessed 97000 CHO gene sequences from [NCBI](https://ftp.ncbi.nlm.nih.gov/genomes/genbank/vertebrate_mammalian/Cricetulus_griseus/all_assembly_versions/). Filter for only protein-coding genes.
-2. Filter sequences to be between 300 and 8000 base pairs (86632 sequences).
-3. Run `cd-hit-est` to cluster the sequences at 8 words and 0.9 nucleotide similarity (47713 sequences).
-3. Translate to amino acids, removing unnatural amino acids (47713 sequences)
-4. Use ESM-2-150M to extract embeddings from protein sequences.
-5. Protein and DNA mappings are split into training, validation, and test splits (80-10-10)
-6. The model decodes the DNA sequence based on the input embeddings from ESM2. It has a dimension of 128 with 2 layers and 4 attention heads.
-7. DNA Vocabulary Mapping: The decoder output is mapped to the DNA codon vocabulary.
-8. The final optimized DNA sequence is generated for high expression in CHO cells.
+## <h2 id="benchmark">Benchmarking</a> </h2>
 
-# CHO Expression Predictor (CHOExp)
-CHOExp is a transformer model designed to predict the expression levels of optimized DNA sequences in CHO cells based on RNA-Seq data, leveraging a correlation between RNA and protein expression. The model has 3 layers with a model dimension of 256 and 4 attention heads.
 
-## Technical Overview
-1. Accessed 26795 genes with RNA expression values.
-2. Removed genes with zero expression and only included the top 66% and those within three standard deviations — 13253 genes.
-3. Split expression data into training, validation, and test splits (80-10-10)
-4. Predict expression for proteins in the training set using an encoder-only transformer model (dimension of 384 with 8 layers and 4 attention heads)
-5. Evaluate the difference between ground truth and predicted expression values to improve the model during the training process
-6. CHOExp is then used to select high-expression CHO genes to use during CHOFormer's training process
+In order to validate the effectiveness of CHOFormer’s codon optimization, we conducted a series of benchmarking tests using Codon Adaptation Index (CAI) and Translational Efficiency Metrics (TAI) on 3000 genes.
+
+Codon Adaptation Index (CAI) is a widely used metric to predict the efficiency of gene expression based on codon usage. It is highly correlated with real-world protein expression levels (dos Reis et al.), making it a reliable metric for assessing codon optimization.
+
+The mean CAI of the optimized sequences was 0.8471 with a standard deviation of 0.0874, compared to the original mean CAI of 0.6541 with a standard deviation of 0.0526. 
+![public/boxplot_cai.png](public/boxplot_cai.png)
+The Translational Adaptation Index (TAI) measures the efficiency with which a sequence can be translated into protein, providing insights into translational efficiency. We used the methodology proposed by Anwar et al. (2023), which provides a more accurate prediction of protein abundance in real-world applications. 
+
+The mean TAI of the optimized sequences was 0.682 with a standard deviation of 0.209, compared to the original mean TAI of 0.373 with a standard deviation of 0.112. Both metrics indicate substantial improvement with CHOFormer.
+![public/boxplot_tai.png](public/boxplot_tai.png)
+
+
+## <h2 id="training">Training and Data Preprocessing</a> </h2>
+### CHOFormer
+We accessed a dataset of 97,000 CHO gene sequences from the NCBI database, focusing exclusively on protein-coding genes. These sequences are then filtered to retain those between 300 and 8000 base pairs, resulting in a refined dataset of 86,632 sequences. To reduce redundancy, `cd-hit-est` is employed to cluster the sequences based on an 8-word window and 90% nucleotide similarity, producing 47,713 sequences. The nucleotide sequences are then translated into their corresponding amino acid sequences, and any unnatural amino acids are removed to ensure biological relevance.
+
+The `ESM-2-150M` model is used to extract protein embeddings, which capture essential features of the amino acid sequences. The dataset is then split into training, validation, and test sets in an 80-10-10 ratio.
+
+The core of CHOFormer’s process involves a Transformer decoder that takes the protein embeddings from ESM-2 as input. The model, with a 128-dimensional space, 2 layers, and 4 attention heads, decodes the embeddings to generate optimized DNA sequences. The output is mapped to the DNA codon vocabulary, ensuring that the codons are correctly translated into their corresponding nucleotide sequences. 
+
+### CHOExp (CHO Expression Predictor)
+CHOExp begins by accessing a dataset of 26,795 genes with corresponding RNA expression values. Genes with zero expression are removed, and the top 66% of genes that fall within three standard deviations are retained, resulting in a refined set of 13,253 genes. This dataset is split into training, validation, and test sets.
+
+The core of CHOExp is an encoder-only transformer model with a dimensionality of 384, 8 layers, and 4 attention heads. The model is trained to predict protein expression levels based on the RNA expression data from the training set. 
+
+## <h2 id="license">License and Credits</a> </h2>
+This was developed by:
+1. Rishab Jain
+2. Shrey Goel
+3. Dhruv Ramu
+4. Vishrut Thoutam
+5. Darsh Mandera
+6. Balaji Rama
+7. Tyler Rose
+8. Benjamin Chen
+
+This project is licensed under the MIT License, which allows for open use, modification, and distribution. For more details, please refer to the [LICENSE](LICENSE) file.
+
+
