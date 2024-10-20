@@ -3,6 +3,8 @@ import { useMediaQuery } from 'react-responsive';
 import styled, { keyframes, createGlobalStyle } from 'styled-components';
 import { motion } from 'framer-motion';
 import { ChevronRight, Menu, X } from 'lucide-react';
+import CHOFormerlogo from './assets/CHOFormer_logo_light.png'
+import CHOFormerlogo_notagline from './assets/CHOFormer_logo_light_notagline.png'
 
 // Assume these imports are correct
 import ncbiLogo from './assets/ncbi.png';
@@ -158,7 +160,7 @@ const About = () => {
       <AppContainer>
         <Header>
         <a href="/">
-        <img src="/CHOFormer_logo.png" alt="CHOFormer Logo" style={{ height: '60px', marginRight: '20px' }} />
+        <img src={CHOFormerlogo_notagline} alt="CHOFormer Logo" style={{ height: '60px', marginRight: '20px' }} />
     </a>
           <MenuButton onClick={toggleNav}>
             {isNavOpen ? <X /> : <Menu />}

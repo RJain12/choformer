@@ -3,10 +3,16 @@ import { useMediaQuery } from 'react-responsive';
 import styled, { keyframes } from 'styled-components';
 import gene from './assets/gene.png';
 import ncbiLogo from './assets/ncbi.png'; // Import the NCBI logo
-import openaiLogo from './assets/openai.png'; // Import the OpenAI logo
+import openaiLogo from './assets/pytorch.png'; // Import the OpenAI logo
 import awsLogo from './assets/aws.png'; // Import the AWS logo
 import esmlogo from './assets/esm.png';
 import { Link } from "react-router-dom";
+import CHOFormerlogo from './assets/CHOFormer_logo_light.png'
+import CHOFormerlogo_notagline from './assets/CHOFormer_logo_light_notagline.png'
+import { FaGithub } from 'react-icons/fa';
+import architecture from './assets/architecture.png';
+import boxplot_cai from './assets/boxplot_cai.png';
+import boxplot_tai from './assets/boxplot_tai.png';
 
 // Styled Components
 const AppContainer = styled.div`
@@ -291,7 +297,9 @@ const Home = () => {
         &#9776; {/* Hamburger Icon */}
     </NavToggle>
     <a href="/">
-        <img src="/CHOFormer_logo.png" alt="CHOFormer Logo" style={{ height: '40px', marginRight: '20px' }} />
+        <img src={CHOFormerlogo_notagline}
+         alt="CHOFormer Logo" 
+         style={{ height: '80px', marginRight: '40px' }} />
     </a>
     <nav>
         <NavUl isOpen={isNavOpen}>
@@ -300,24 +308,47 @@ const Home = () => {
                     &times; {/* Close Icon */}
                 </CloseButton>
             )}
-            <NavLi><NavA href="/">Home</NavA></NavLi>
+            {/* <NavLi><NavA href="/">Home</NavA></NavLi> */}
             <NavLi><NavA href="/CHOFormer">CHOFormer</NavA></NavLi>
             <NavLi><NavA href="/choexp">CHOExp</NavA></NavLi>
             <NavLi><NavA href="/about">About</NavA></NavLi>
+            <NavLi>
+        <NavA href="https://github.com/RJain12/choformer" target="_blank" rel="noopener noreferrer">
+            <FaGithub size={24} style={{ marginLeft: '8px' }} /> {/* GitHub Icon */}
+        </NavA>
+    </NavLi>
         </NavUl>
     </nav>
 </Header>
 
             <HeroContainer>
                 <Hero>
-                    <HeroH1>CHOFormer</HeroH1>
-                    <HeroP>Optimizing Protein Expression in CHO Cells</HeroP>
-                    <HeroP>From Months to Minutes.</HeroP>
+                    {/* <HeroH1>CHOFormer</HeroH1> */}
+                    <img src={CHOFormerlogo_notagline}
+                    alt="CHOFormer Logo" 
+                    style={{ height: '150px', marginRight: '75px' }} />
+                    <HeroP>Improving codon optimization of genes for maximal recombinant expression in Chinese Hamster Ovary (CHO) expression systems.</HeroP>
+                    {/* <HeroP>From Months to Minutes.</HeroP> */}
                     <HeroButton to="/CHOFormer" style={{ marginRight: '1rem' }}>CHOFormer</HeroButton>
                     <HeroButton to="/choexp">CHOExp</HeroButton>
                     
-                    {/* Logo section */}
-                    <LogoContainer>
+                    {/* Stats Section */}
+                    {/* <StatsSection>
+                        <StatBox>
+                            <StatNumber>96.98%</StatNumber>
+                            <StatCaption>Proteins have Improved Expression</StatCaption>
+                        </StatBox>
+                        <StatBox>
+                            <StatNumber>2452×</StatNumber>
+                            <StatCaption>Increase in Protein Expression</StatCaption>
+                        </StatBox>
+                        <StatBox>
+                            <StatNumber>0.847</StatNumber>
+                            <StatCaption>Mean Codon Adaptation Index</StatCaption>
+                        </StatBox>
+                    </StatsSection> */}
+                                    {/* Logo section */}
+                                    <LogoContainer>
                         <LogoBox>
                             <Logo src={ncbiLogo} alt="NCBI Logo" />
                         </LogoBox>
@@ -396,26 +427,12 @@ const Home = () => {
                                 }} 
                                 className="logo-text"
                             >
-                                ESM-2-650M
+                                ESM-2
                             </span>
                         </LogoBox>
                     </LogoContainer>
 
-                    {/* Stats Section */}
-                    <StatsSection>
-                        <StatBox>
-                            <StatNumber>96.98%</StatNumber>
-                            <StatCaption>Improved Protein Expression</StatCaption>
-                        </StatBox>
-                        <StatBox>
-                            <StatNumber>2452×</StatNumber>
-                            <StatCaption>Increase in Protein Expression</StatCaption>
-                        </StatBox>
-                        <StatBox>
-                            <StatNumber>0.847</StatNumber>
-                            <StatCaption>Mean Codon Adaptation Index</StatCaption>
-                        </StatBox>
-                    </StatsSection>
+
                 </Hero>
                 {isMobile ? null : <HeroImage src={gene} alt="Gene" />}
             </HeroContainer>

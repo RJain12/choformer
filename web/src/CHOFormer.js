@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { ChevronRight, Download, Upload, X, Menu } from "lucide-react";
 import { useMediaQuery } from 'react-responsive';
 import styled, { keyframes, createGlobalStyle } from 'styled-components';
+// import CHOFormerlogo_notagline from './assets/CHOFormer_logo_light.png'
+import CHOFormerlogo_notagline from './assets/CHOFormer_logo_light_notagline.png'
 
 
 const GlobalStyle = createGlobalStyle`
@@ -466,7 +468,7 @@ const CHOFormer = () => {
     <div style={styles.app}>
       <Header>
         <a href="/">
-        <img src="/CHOFormer_logo.png" alt="CHOFormer Logo" style={{ height: '60px', marginRight: '20px' }} />
+        <img src={CHOFormerlogo_notagline} alt="CHOFormer Logo" style={{ height: '90px', marginRight: '30px' }} />
     </a>
           <MenuButton onClick={toggleNav}>
             {isNavOpen ? <X /> : <Menu />}
@@ -477,7 +479,7 @@ const CHOFormer = () => {
             variants={navVariants}
           >
             <NavList>
-              <NavItem><a href="/">Home</a></NavItem>
+              {/* <NavItem><a href="/">Home</a></NavItem> */}
               <NavItem><a href="/CHOFormer">CHOFormer</a></NavItem>
               <NavItem><a href="/CHOExp">CHOExp</a></NavItem>
               <NavItem><a href="/about">About</a></NavItem>
