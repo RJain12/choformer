@@ -7,12 +7,132 @@ import torch
 import torch.nn as nn
 from fastapi.middleware.cors import CORSMiddleware
 from transformers import AutoTokenizer, AutoModelForCausalLM
+
+import torch
+import torch.nn.functional as F
+
+
+import sys
+sys.path.append('/home/ec2-user/hackathon/choformer')
+
+from inference.transformer import Transformer
+
+# config
+num_layers = 8
+dim = 384
+dim_head = 128
+heads = 4
+
+import torch
+
+
+
+import torch.nn.functional as F
+import torch.nn as nn
+
+# from choformer import tokenizer
+# from choformer.model import DNADecoder
+from inference.model import DNADecoder
+
+from omegaconf import OmegaConf
+from torch.nn import TransformerDecoderLayer, TransformerDecoder
+from transformers import AutoModel, AutoTokenizer
+
+config = OmegaConf.load("/home/ec2-user/hackathon/choformer/choformer/config.yaml")
+
+print(config)
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+choformer_ = DNADecoder(config).to(device).eval()
+choformer_.load_state_dict(torch.load("/home/ec2-user/hackathon/choformer/choformer/ckpts/best_model.pth", map_location=device))
+
+esm_model = AutoModel.from_pretrained("facebook/esm2_t6_8M_UR50D").to(device)
+esm_tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")
+
+
+pretrained_path = "/home/ec2-user/hackathon/expmodel.pt" # replace this with the file from google drive
+
+model = Transformer(num_layers=num_layers, dim=dim, n_classes=1, heads=heads, dim_head=dim_head)
+
+model.load_state_dict(torch.load(pretrained_path))
+model.to(device).eval()
+
+
+vocab = {"[CLS]": 0, "[EOS]": 1, "[PAD]": 2}
+AGCT = {"A": 0, "G": 1, "C": 2, "T": 3, "N": 4}
+
+def process_codon(seq: str):
+    try:
+        idx_1 = AGCT[seq[0]]
+        idx_2 = AGCT[seq[1]]
+        idx_3 = AGCT[seq[2]]
+        return 25 * idx_1 + 5 * idx_2 + idx_3 + 3
+    except:
+        return 1  # return a default index for invalid codons
+
+def embed(seq: str):
+    codons = [seq[i:i+3] for i in range(0, len(seq), 3)]
+    tokens = [0, *[process_codon(codon) for codon in codons]]
+    # Ensure tokens do not exceed max_length
+    
+    return torch.tensor(tokens).unsqueeze(0)
+
+def run_choexp_inference(dna_sequences: list[str]):
+    res = []
+    for seq in dna_sequences:
+        inputs = embed(seq)
+        att = torch.ones_like(inputs)
+        
+        output = model(inputs.to(device), att.to(device))
+        normalized_output = F.sigmoid(output)
+        
+        # print(f"Expression: {normalized_output.item()}")
+        res.append(normalized_output.item())
+    return res
+
+
+def run_choformer_inference(protein_sequences: list[str]):
+    print('p', protein_sequences)
+    longest_protein_length = max([len(sequence) for sequence in protein_sequences])
+
+    protein_tokens = esm_tokenizer(
+        protein_sequences,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=longest_protein_length
+    ).to(device)
+
+
+    with torch.no_grad():
+        protein_embeddings = esm_model(**protein_tokens).last_hidden_state.squeeze(0)
+
+    print('pp', protein_embeddings)
+
+    outputs = choformer_.generate(protein_embeddings)
+    
+    return outputs['generated_sequences']
+
+
 app = FastAPI()
 
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
 ]
+
+class ProteinSequences(BaseModel):
+    sequences: list[str]
+
+class GeneratedSequences(BaseModel):
+    sequences: list[str]
+
+class DNASequences(BaseModel):
+    sequences: list[str]
+
+class ExpressionLevels(BaseModel):
+    levels: list[float]
 
 app.add_middleware(
     CORSMiddleware,
@@ -22,105 +142,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class TextGenerator:
-    def __init__(self, model_name="gpt2", device=None):
-        """
-        Initialize the text generator with a pre-trained model.
-        Popular model options:
-        - "gpt2" (small, fast)
-        - "gpt2-medium" (medium size)
-        - "EleutherAI/gpt-neo-125M" (Neo alternative)
-        - "facebook/opt-350m" (Meta's OPT model)
-        """
-        if device is None:
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device = device
-            
-        print(f"Loading model {model_name} on {self.device}...")
-        
-        # Load tokenizer and model
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            torch_dtype=torch.float16 if self.device.type == "cuda" else torch.float32,
-            low_cpu_mem_usage=True
-        )
-        self.model.to(self.device)
-        
-        print("Model loaded successfully!")
-
-    def generate_text(
-        self,
-        prompt,
-        max_length=100,
-        num_return_sequences=1,
-        temperature=0.7,
-        top_k=50,
-        top_p=0.95,
-        do_sample=True,
-        no_repeat_ngram_size=2
-    ):
-        """
-        Generate text based on a prompt.
-        
-        Args:
-            prompt (str): The input prompt
-            max_length (int): Maximum length of generated text (including prompt)
-            num_return_sequences (int): Number of different sequences to generate
-            temperature (float): Controls randomness (higher = more random)
-            top_k (int): Number of highest probability tokens to consider
-            top_p (float): Cumulative probability threshold for token selection
-            do_sample (bool): If True, sample from distribution; if False, use greedy decoding
-            no_repeat_ngram_size (int): Size of n-grams that shouldn't be repeated
-        """
-        # Encode the prompt
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-        
-        # Generate text
-        outputs = self.model.generate(
-            **inputs,
-            max_length=max_length,
-            num_return_sequences=num_return_sequences,
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p,
-            do_sample=do_sample,
-            no_repeat_ngram_size=no_repeat_ngram_size,
-            pad_token_id=self.tokenizer.eos_token_id
-        )
-        
-        # Decode and return the generated text
-        generated_texts = [
-            self.tokenizer.decode(output, skip_special_tokens=True)
-            for output in outputs
-        ]
-        
-        return generated_texts
-    
-model = TextGenerator("gpt2") # lightweight, easier to run locally
-
-class TextInput(BaseModel):
-    text: str
-
-def process_text(text):
-    results = model.generate_text(text)
-    return results[0]
-
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
 
-@app.post("/process")
-async def process_input(
-    text_input: TextInput = Body(None), 
-):
-    if text_input:
-        result = process_text(text_input.text)
-        return {"result": result}
-    else:
-        raise HTTPException(status_code=400, detail="No input provided")
+@app.post("/choexp_inference/", response_model=ExpressionLevels)
+async def choexp_inference(dna_sequences: DNASequences):
+    try:
+        expression_levels = run_choexp_inference(dna_sequences.sequences)
+        return ExpressionLevels(levels=expression_levels)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/choformer_inference/", response_model=GeneratedSequences)
+async def choformer_inference(protein_sequences: ProteinSequences):
+    try:
+        generated_sequences = run_choformer_inference(protein_sequences.sequences)
+        return GeneratedSequences(sequences=generated_sequences)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/process_csv")
 async def process_csv(file: UploadFile = File(...)):
@@ -130,7 +171,8 @@ async def process_csv(file: UploadFile = File(...)):
     csv_reader = csv.reader(io.StringIO(content.decode('utf-8')))
     results = []
     for row in csv_reader:
-        result = process_text(row[0])
+        # result = process_text(row[0])
+        result = ''
         results.append(result) 
     return {"results": results}
 

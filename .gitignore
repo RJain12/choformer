@@ -25,3 +25,4 @@ choformer/wandb
 expression/logs
 expression/data/old
 expression/tests
+venv
