@@ -212,7 +212,8 @@ class DNADecoder(nn.Module):
             decoder_out = self.decoder(tgt=protein_embeddings.float(),
                                     memory=protein_embeddings.float(),
                                     tgt_mask=causual_mask,
-                                    tgt_is_causal=True)
+                                    tgt_is_causal=True
+                                    )
             logits = self.decoder_to_dna_vocab(decoder_out)
 
             return {
