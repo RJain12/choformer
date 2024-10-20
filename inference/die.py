@@ -21,7 +21,7 @@ def save_response_to_file(response: List[dict], file_path: str):
 def main():
     input_file = "protein_sequences.txt"
     output_file = "api_response.txt"
-    api_url = "http://localhost:8000/choformer_inference"
+    api_url = "http://3.17.139.31:8000/choformer_inference"
     chunk_size = 4
 
     # Read items from file
@@ -34,7 +34,7 @@ def main():
     all_responses = []
     for i, chunk in enumerate(sequence_chunks):
         print(f"Processing chunk {i+1}/{len(sequence_chunks)}...")
-        response = make_api_request(api_url, chunk)
+        response = make_api_request(api_url, chunk)['sequences']
         all_responses.extend(response)  # Assuming the API returns a list of results
 
     # Save collective response to file
