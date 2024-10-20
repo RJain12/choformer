@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { ChevronRight, Download } from "lucide-react";
+import { ChevronRight, Download, Upload } from "lucide-react";
 
 const CHOExp = () => {
   const [loading, setLoading] = useState(false);
@@ -10,6 +10,7 @@ const CHOExp = () => {
   const [file, setFile] = useState(null);
   const [sequence, setSequence] = useState("");
   const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleGoClick = async () => {
     setLoading(true);
@@ -64,7 +65,24 @@ const CHOExp = () => {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile);
+    if (selectedFile) {
+      setFile(selectedFile);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setSequence(event.target.result);
+      };
+      reader.onerror = (error) => {
+        setError("Error reading file: " + error.message);
+      };
+      reader.readAsText(selectedFile);
+    } else {
+      setFile(null);
+      setSequence("");
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current.click();
   };
 
   const handleDownload = (format) => {
@@ -88,6 +106,29 @@ const CHOExp = () => {
   };
 
   const styles = {
+
+    uploadButton: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "0.5rem 1rem",
+        backgroundColor: "#1c5ee1",
+        color: "#fff",
+        border: "none",
+        borderRadius: "50px",
+        fontSize: "0.9rem",
+        fontWeight: "600",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        marginRight: "1rem",
+        boxShadow: "0 4px 6px rgba(28, 94, 225, 0.2)",
+        "&:hover": {
+          backgroundColor: "#4d7ce9",
+          transform: "translateY(-2px)",
+          boxShadow: "0 6px 8px rgba(28, 94, 225, 0.3)",
+        },
+      },
+
     app: {
       background: "linear-gradient(270deg, #1c5ee1, hsl(0, 0%, 0%))",
       backgroundSize: "400% 400%",
@@ -376,7 +417,7 @@ const CHOExp = () => {
         >
           <textarea
             style={styles.textarea}
-            placeholder="Enter sequence (e.g., FASTA format)"
+            placeholder="Enter sequence (e.g., FASTA format) or upload a file"
             value={sequence}
             onChange={(e) => setSequence(e.target.value)}
           />
@@ -386,18 +427,18 @@ const CHOExp = () => {
               type="file"
               accept=".csv,.fasta,.tsx,.txt"
               id="fileInput"
+              ref={fileInputRef}
               onChange={handleFileChange}
               style={styles.fileInput}
             />
-            <motion.label
-              htmlFor="fileInput"
-              style={styles.fileInputLabel}
+            <motion.button
+              onClick={handleUploadClick}
+              style={styles.uploadButton}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Choose File{" "}
-              <ChevronRight size={18} style={{ marginLeft: "5px" }} />
-            </motion.label>
+              Upload File <Upload size={18} style={{ marginLeft: "5px" }} />
+            </motion.button>
             <span style={styles.fileName}>
               {file ? file.name : "No file chosen"}
             </span>
@@ -493,24 +534,17 @@ const CHOExp = () => {
             How to Use This Tool
           </h2>
           <ol style={{ paddingLeft: "1.5rem" }}>
-            <li>
-              Enter your sequence data in FASTA format in the text area or
-              upload a file.
-            </li>
+            <li>Enter your sequence data in FASTA format in the text area or upload a file.</li>
+            <li>If you upload a file, its contents will be displayed in the text area for review or editing.</li>
             <li>Click the "Predict" button to start the analysis.</li>
-            <li>
-              Wait for the results to appear. This may take a few moments.
-            </li>
-            <li>
-              Once complete, you can view the predicted expression level and
-              download the results in CSV or TXT format.
-            </li>
+            <li>Wait for the results to appear. This may take a few moments.</li>
+            <li>Once complete, you can view the predicted expression level and download the results in CSV or TXT format.</li>
           </ol>
         </motion.div>
       </main>
 
       <footer style={styles.footer}>
-        <p>&copy; 2024 Dhruv Ramu. All rights reserved.</p>
+        <p>&copy; 2024 Choformer. All rights reserved.</p>
       </footer>
     </div>
   );
