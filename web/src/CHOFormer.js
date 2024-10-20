@@ -8,7 +8,7 @@ import styled, { keyframes, createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   body {
-    margin: 0;
+    margin: 0;g
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
