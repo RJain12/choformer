@@ -1,29 +1,44 @@
 task: "train" # train, test, benchmarking (to be set up later)
-dna_fm_id: "dnabert2" # pretrained dna foundation model id for huggingface
+dna_fm_id: "InstaDeepAI/nucleotide-transformer-v2-100m-multi-species" # pretrained dna foundation model id for huggingface
+model_type: "transformer" # transformer | lstm
+load_path: "out/model.pt"
+out_name: "model_test.csv"
+# lstm
+# model:
+#   input_size: 512
+#   hidden_size: 256
+#   num_layers: 2
 
+# transformer
 model:
-  input_size: 768
-  hidden_size: 384
-  num_layers: 2
+  input_dim: 512
+  n_classes: 1
+  num_layers: 8
+  dim: 384
+  heads: 4
+  dim_head: 128
+  ff_mult: 4
+  dropout: 0.0
 
 train:
-  n_epochs: 10
-  grad_accum_iter: 4
-  grad_clip: 5.0
+  n_epochs: 100
+  grad_accum_iter: 8
+  grad_clip: 10.0
   epochs_per_val: 1
-  learning_rate: 3e-4
-  weight_decay: 1e-3
+  learning_rate: 9e-4
+  weight_decay: 1e-4
   beta1: 0.9
   beta2: 0.999
 
 data:
-  train_data_path: "data/train.csv"
-  val_data_path: "data/val.csv"
+  train_data_path: "data/cho_train_cls.csv"
+  val_data_path: "data/cho_val_cls.csv"
+  test_data_path: "data/cho_test_cls.csv"
   batch_size: 16
   num_workers: 8
-  max_length: 3072 # max sequence length to truncate/pad to
+  max_length: 2048 # max sequence length to truncate/pad to
 
 log:
   project: explstm
-  name: test_run3
+  name: idklol-999_wd1e3_clip10_epochs6_accum4_bsize16_len3072
   ckpt_path: "."
