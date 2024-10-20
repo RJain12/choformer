@@ -1,248 +1,249 @@
 import React, { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import styled, { keyframes } from 'styled-components';
-import ncbiLogo from './assets/ncbi.png'; // Adjust the path as necessary
-import openaiLogo from './assets/openai.png'; // Adjust the path as necessary
-import awsLogo from './assets/aws.png'; // Adjust the path as necessary
+import styled, { keyframes, createGlobalStyle } from 'styled-components';
+import { motion } from 'framer-motion';
+import { ChevronRight, Menu, X } from 'lucide-react';
 
-const AppContainer = styled.div`
-    font-family: Arial, sans-serif;
+// Assume these imports are correct
+import ncbiLogo from './assets/ncbi.png';
+import openaiLogo from './assets/openai.png';
+import awsLogo from './assets/aws.png';
+
+const GlobalStyle = createGlobalStyle`
+  body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    text-align: left;
-    background: radial-gradient(64.1% 57.6% at 68.3% 44%, #1c5ee1 10.56%, hsl(0, 0%, 0%) 100%);
-    color: #fff;
-    min-height: 100vh;
-    padding: 0 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    @media (max-width: 768px) {
-        padding: 0 1rem; // Adjust padding for smaller screens
-    }
-            @media (min-width: 769px) {
-        height: 100vh; // Ensure the container takes full viewport height on desktop
-        overflow: hidden; // Prevent scrolling on desktop
-    }
+    font-family: 'Inter', sans-serif;
+  }
+`;
+
+const AppContainer = styled.div`
+  background: radial-gradient(64.1% 57.6% at 68.3% 44%, #1c5ee1 10.56%, hsl(0, 0%, 0%) 100%);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Header = styled.header`
-    background: transparent;
-    color: #fff;
-    padding: 1rem 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
-const NavToggle = styled.div`
-    display: block; // Always show the toggle
-    font-size: 1.5rem;
-    cursor: pointer;
-
-    @media (min-width: 769px) {
-        display: none; // Hide toggle on larger screens
-    }
+const Nav = styled(motion.nav)`
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    background: rgba(28, 94, 225, 0.95);
+    padding: 2rem;
+    z-index: 1000;
+  }
 `;
 
-// Keyframes for animation
-const slideDown = keyframes`
-    from {
-        max-height: 0;
-        opacity: 0;
-    }
-    to {
-        max-height: 500px;
-        opacity: 1;
-    }
+const NavList = styled.ul`
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
-const slideUp = keyframes`
-    from {
-        max-height: 500px;
-        opacity: 1;
-    }
-    to {
-        max-height: 0;
-        opacity: 0;
-    }
-`;
-
-const NavUl = styled.ul`
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
-    display: flex;
-    @media (max-width: 768px) {
-        display: block; // Use block display for mobile
-        background-color: #1a1a1a; // Dark background for mobile navbar
-        position: fixed; // Fixed position
-        top: 0; // Start from the top of the screen
-        left: 0;
-        right: 0; // Full width
-        transition: opacity 0.3s ease;
-        border-radius: 8px; // Slightly rounded corners
-        z-index: 1000; // Ensure it appears on top
-        padding: 1rem 0; // Padding for mobile navbar
-        animation: ${props => (props.isOpen ? slideDown : slideUp)} 0.3s ease forwards;
-    }
-`;
-
-const NavLi = styled.li`
-    margin: 0 1rem;
-
-    @media (max-width: 768px) {
-        margin: 1rem 0; // Space out items on mobile
-        padding: 0.5rem 1rem; // Padding for each item
-        text-align: center; // Center text for mobile
-    }
-`;
-
-const NavA = styled.a`
+const NavItem = styled.li`
+  a {
     color: #fff;
     text-decoration: none;
-    display: block; // Make the entire area clickable
+    font-weight: 500;
+    transition: color 0.3s ease;
 
     &:hover {
-        background: rgba(255, 255, 255, 0.2); // Light background on hover
+      color: #4d90fe;
     }
+  }
 `;
 
-const CloseButton = styled.div`
-    cursor: pointer;
-    color: #fff;
-    font-size: 1.5rem;
-    text-align: right;
-    padding: 1rem;
+const MenuButton = styled.button`
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
 
-    @media (min-width: 769px) {
-        display: none; // Hide on larger screens
-    }
+  @media (max-width: 768px) {
+    display: block;
+  }
 `;
 
 const ContentContainer = styled.div`
-    display: flex;
-    flex-direction: row; // Change to row for larger screens
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (min-width: 1024px) {
+    flex-direction: row;
     align-items: flex-start;
-    justify-content: space-between; // Space between text and logos
-    flex: 1;
-    width: 100%;
-    padding: 0 1rem; // Add padding for mobile
-    @media (max-width: 768px) {
-        flex-direction: column; // Stack items vertically on mobile
-        align-items: center; // Center align items
-    }
+    justify-content: space-between;
+  }
 `;
 
 const Content = styled.section`
-    text-align: left;
-    padding: 2rem 0;
-    margin: 0 0 23rem 0;
-    background: transparent;
-    width: 100%; // Full width on mobile
-    max-width: 800px; // Maximum width for larger screens
+  text-align: left;
+  max-width: 800px;
 `;
 
-const ContentH1 = styled.h1`
-    margin: 0 0 0.5rem 0;
-    margin-top: 20px;
-    font-size: 3rem; // Adjusted for responsiveness
+const Title = styled(motion.h1)`
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #4d90fe;
 `;
 
-const ContentP = styled.p`
-    font-size: 1.2rem; // Slightly decrease font size
-    margin: 0 0 2rem 0;
+const Paragraph = styled(motion.p)`
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
 `;
 
-const Footer = styled.footer`
-    text-align: center;
-    padding: 0.5rem 0;
-    background: transparent;
-    color: #fff;
-    width: 100%;
-    margin-top: -150rem;
-`;
-
-const FooterP = styled.p`
-    margin-top: -35px;
+const Highlight = styled.span`
+  color: #4d90fe;
+  font-weight: 600;
 `;
 
 const LogoContainer = styled.div`
-    display: flex;
-    flex-direction: column; // Align logos vertically
-    justify-content: flex-start;
-    align-items: flex-start; // Align logos to the left
-    margin-top: 2rem;
-    @media (max-width: 768px) {
-    margin-top: -25rem;
-    margin-right: -5rem;
-}
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+
+  @media (min-width: 1024px) {
+    margin-top: 0;
+  }
 `;
 
-const Logo = styled.img`
-    height: 150px; // Increased height
-    width: auto; // Maintain aspect ratio
-    margin: 1rem 0; // Space between logos
+const Logo = styled(motion.img)`
+  height: 80px;
+  width: auto;
 `;
 
-const AwsLogo = styled(Logo)`
-    height: 200px; // Larger height for AWS logo
-    margin-left: -4.25rem; // Move AWS logo to the left
-    margin-top: -10px;
+const Footer = styled.footer`
+  text-align: center;
+  padding: 1rem;
+  margin-top: auto;
 `;
 
 const About = () => {
-    const [isNavOpen, setIsNavOpen] = useState(false);
-    const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
-    const toggleNav = () => {
-        setIsNavOpen(!isNavOpen);
-    };
+  const toggleNav = () => setIsNavOpen(!isNavOpen);
 
-    const closeNav = () => {
-        setIsNavOpen(false);
-    };
+  const navVariants = {
+    open: { x: 0 },
+    closed: { x: '100%' },
+  };
 
-    return (
-        <AppContainer>
-            <Header>
-                <NavToggle onClick={toggleNav}>
-                    &#9776; {/* Hamburger Icon */}
-                </NavToggle>
-                <nav>
-                    <NavUl isOpen={isNavOpen}>
-                        {isMobile && (
-                            <CloseButton onClick={closeNav}>
-                                &times; {/* Close Icon */}
-                            </CloseButton>
-                        )}
-                        <NavLi><NavA href="/">Home</NavA></NavLi>                       
-                        <NavLi><NavA href="/CHOFormer">CHOFormer</NavA></NavLi>
-                        <NavLi><NavA href="/CHOExp">CHOExp</NavA></NavLi>
-                        <NavLi><NavA href="/about">About</NavA></NavLi>
-                    </NavUl>
-                </nav>
-            </Header>
-            <ContentContainer>
-                <Content>
-                    <ContentH1>About Us</ContentH1>
-                    <ContentP>Some more text goes here.</ContentP>
-                </Content>
-                <LogoContainer>
-                    <Logo src={ncbiLogo} alt="NCBI Logo" />
-                    <Logo src={openaiLogo} alt="OpenAI Logo" />
-                    <AwsLogo src={awsLogo} alt="AWS Logo" />
-                </LogoContainer>
-            </ContentContainer>
-            <Footer>
-                <FooterP>&copy; 2024 Choformer. All rights reserved.</FooterP>
-            </Footer>
-        </AppContainer>
-    );
+  return (
+    <>
+      <GlobalStyle />
+      <AppContainer>
+        <Header>
+        <a href="/">
+        <img src="/CHOFormer_logo.png" alt="CHOFormer Logo" style={{ height: '60px', marginRight: '20px' }} />
+    </a>
+          <MenuButton onClick={toggleNav}>
+            {isNavOpen ? <X /> : <Menu />}
+          </MenuButton>
+          <Nav
+            initial={false}
+            animate={isMobile ? (isNavOpen ? "open" : "closed") : "open"}
+            variants={navVariants}
+          >
+            <NavList>
+              <NavItem><a href="/">Home</a></NavItem>
+              <NavItem><a href="/CHOFormer">CHOFormer</a></NavItem>
+              <NavItem><a href="/CHOExp">CHOExp</a></NavItem>
+              <NavItem><a href="/about">About</a></NavItem>
+            </NavList>
+          </Nav>
+        </Header>
+        <ContentContainer>
+          <Content>
+            <Title
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              About CHOFormer
+            </Title>
+            <Paragraph
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              CHOFormer is a cutting-edge <Highlight>Transformer decoder model</Highlight> developed to optimize codon sequences for <Highlight>improving protein expression</Highlight> in Chinese Hamster Ovary (CHO) cells. It addresses the challenges posed by the genetic code's degeneracy, where 61 sense codons encode only 20 standard amino acids.
+            </Paragraph>
+            <Paragraph
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              While synonymous codons encode the same amino acid, their selection can drastically influence the <Highlight>speed and accuracy</Highlight> of protein production. CHOFormer leverages advanced machine learning techniques to optimize codon selection based on the relationship between protein expression and codon usage patterns.
+            </Paragraph>
+            <Paragraph
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              As CHO cells are used in the production of nearly 70% of recombinant pharmaceuticals, including monoclonal antibodies and other therapeutic proteins, optimizing protein yield in these cells is critical for drug development. CHOFormer significantly improves protein yields, with <Highlight>96.98% of proteins showing higher expression</Highlight> when optimized with our model.
+            </Paragraph>
+            <Paragraph
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+            >
+              Perhaps most importantly, CHOFormer reduces the optimization process from months in laboratory settings to <Highlight>mere minutes</Highlight>, drastically accelerating the drug manufacturing process and potentially bringing life-saving treatments to patients faster.
+            </Paragraph>
+          </Content>
+          <LogoContainer>
+            <Logo
+              src={ncbiLogo}
+              alt="NCBI Logo"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 1 }}
+            />
+            <Logo
+              src={openaiLogo}
+              alt="OpenAI Logo"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
+            />
+            <Logo
+              src={awsLogo}
+              alt="AWS Logo"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 1.4 }}
+            />
+          </LogoContainer>
+        </ContentContainer>
+        <Footer>
+          <p>&copy; 2024 CHOFormer. All rights reserved.</p>
+        </Footer>
+      </AppContainer>
+    </>
+  );
 };
 
 export default About;

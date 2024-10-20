@@ -291,7 +291,7 @@ const Home = () => {
         &#9776; {/* Hamburger Icon */}
     </NavToggle>
     <a href="/">
-        <img src="https://choformer.com/CHOFormer_logo.png" alt="CHOFormer Logo" style={{ height: '40px', marginRight: '20px' }} />
+        <img src="/CHOFormer_logo.png" alt="CHOFormer Logo" style={{ height: '40px', marginRight: '20px' }} />
     </a>
     <nav>
         <NavUl isOpen={isNavOpen}>

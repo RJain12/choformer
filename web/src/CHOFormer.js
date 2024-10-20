@@ -1,7 +1,142 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { ChevronRight, Download, Upload } from "lucide-react";
+import { ChevronRight, Download, Upload, X, Menu } from "lucide-react";
+import { useMediaQuery } from 'react-responsive';
+import styled, { keyframes, createGlobalStyle } from 'styled-components';
+
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    margin: 0;g
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+  }
+`;
+
+const AppContainer = styled.div`
+  background: radial-gradient(64.1% 57.6% at 68.3% 44%, #1c5ee1 10.56%, hsl(0, 0%, 0%) 100%);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
+
+const Header = styled.header`
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Nav = styled(motion.nav)`
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    background: rgba(28, 94, 225, 0.95);
+    padding: 2rem;
+    z-index: 1000;
+  }
+`;
+
+const NavList = styled.ul`
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const NavItem = styled.li`
+  a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #4d90fe;
+    }
+  }
+`;
+
+const MenuButton = styled.button`
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (min-width: 1024px) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+`;
+
+const Content = styled.section`
+  text-align: left;
+  max-width: 800px;
+`;
+
+const Title = styled(motion.h1)`
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #4d90fe;
+`;
+
+const Paragraph = styled(motion.p)`
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+`;
+
+const Highlight = styled.span`
+  color: #4d90fe;
+  font-weight: 600;
+`;
+
+const LogoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+
+  @media (min-width: 1024px) {
+    margin-top: 0;
+  }
+`;
+
+const Logo = styled(motion.img)`
+  height: 80px;
+  width: auto;
+`;
+
+const Footer = styled.footer`
+  text-align: center;
+  padding: 1rem;
+  margin-top: auto;
+`;
 
 const CHOFormer = () => {
   const [loading, setLoading] = useState(false);
@@ -10,6 +145,16 @@ const CHOFormer = () => {
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
+
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
+  const toggleNav = () => setIsNavOpen(!isNavOpen);
+
+  const navVariants = {
+    open: { x: 0 },
+    closed: { x: '100%' },
+  };
 
   const handleGoClick = async () => {
     setLoading(true);
@@ -103,9 +248,6 @@ const CHOFormer = () => {
       display: "flex",
       flexDirection: "column",
       fontFamily: "Arial, sans-serif",
-    },
-    header: {
-      marginBottom: "2rem",
     },
     nav: {
       display: "flex",
@@ -322,21 +464,26 @@ const CHOFormer = () => {
 
   return (
     <div style={styles.app}>
-      <header style={styles.header}>
-        <nav style={styles.nav}>
-          {["Home", "CHOFormer", "CHOExp", "About"].map((item) => (
-            <motion.a
-              key={item}
-              href={`/${item.toLowerCase()}`}
-              style={styles.navItem}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {item}
-            </motion.a>
-          ))}
-        </nav>
-      </header>
+      <Header>
+        <a href="/">
+        <img src="/CHOFormer_logo.png" alt="CHOFormer Logo" style={{ height: '60px', marginRight: '20px' }} />
+    </a>
+          <MenuButton onClick={toggleNav}>
+            {isNavOpen ? <X /> : <Menu />}
+          </MenuButton>
+          <Nav
+            initial={false}
+            animate={isMobile ? (isNavOpen ? "open" : "closed") : "open"}
+            variants={navVariants}
+          >
+            <NavList>
+              <NavItem><a href="/">Home</a></NavItem>
+              <NavItem><a href="/CHOFormer">CHOFormer</a></NavItem>
+              <NavItem><a href="/CHOExp">CHOExp</a></NavItem>
+              <NavItem><a href="/about">About</a></NavItem>
+            </NavList>
+          </Nav>
+        </Header>
 
       <main style={styles.content}>
         <motion.h1
