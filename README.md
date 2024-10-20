@@ -62,18 +62,27 @@ This dataset has been uploaded to Polaris [here](https://polarishub.io/datasets/
 
 
 ## <h2 id="license">License and Credits</a> </h2>
-Rishab Jain<sup>*</sup>, Shrey Goel<sup>*</sup>, Vishrut Thoutam<sup>*</sup>, Dhruv Ramu, Darsh Mandera, Balaji Rama, Tyler Rose, Benjamin Chen
+Authors:
+1. Rishab Jain<sup>*†</sup>
+2. Shrey Goel<sup>*</sup>
+3. Vishrut Thoutam<sup>*</sup>
+4. Dhruv Ramu
+5. Darsh Mandera
+6. Balaji Rama
+7. Tyler Rose
+8. Benjamin Chen
 
 <sup>*</sup>These authors contributed equally
+<sup>†</sup> Corresponding Author: rkjain@mgh.harvard.edu
 
 Affiliations:
-R.J. - Harvard College. Corresponding: rkjain@mgh.harvard.edu
-S.G. - Duke University.
-V.T. - Programmable Biology Laboratory.
-D.R. - Indian Institute of Science.
-B.R. - Rutgers University.
-D.M. - Duke University and Center for Virtual Imaging Trials.
-T.R. - Bindwell & Monta Vista High.
-B.C. - The University of California, San Diego.
+R.J. - Harvard College
+S.G. - Duke University
+V.T. - High Technology High School
+D.R. - Indian Institute of Science
+B.R. - Rutgers University
+D.M. - Duke University
+T.R. - Bindwell & Monta Vista High School
+B.C. - University of California, San Diego
 
 This project is licensed under the MIT License, which allows for open use, modification, and distribution. For more details, please refer to the [LICENSE](LICENSE) file.
