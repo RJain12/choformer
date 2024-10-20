@@ -69,7 +69,7 @@ Rishab Jain,<sup>*†1</sup> Shrey Goel,<sup>*2</sup> Vishrut Thoutam,<sup>*3</s
 <sup>†</sup> Corresponding Author: rkjain@mgh.harvard.edu
 
 **Affiliations:**
-<sup>1</sup> Harvard College
+<sup>1</sup>Harvard College
 <sup>2</sup>Duke University
 <sup>3</sup>High Technology High School
 <sup>4</sup>Indian Institute of Science
