@@ -57,14 +57,16 @@ The core of CHOExp is an encoder-only transformer model with a dimensionality of
 
 ## <h2 id="license">License and Credits</a> </h2>
 This was developed by:
-1. Rishab Jain
-2. Shrey Goel
-3. Balaji Rama
-4. Dhruv Ramu
-5. Vishrut Thoutam
-6. Darsh Mandera
+1. Rishab Jain<sup>*</sup>
+2. Shrey Goel<sup>*</sup>
+3. Vishrut Thoutam<sup>*</sup>
+4. Balaji Rama
+5. Darsh Mandera
+6. Dhruv Ramu
 7. Tyler Rose
 8. Benjamin Chen
+
+<sup>*</sup>These authors contributed equally
 
 This project is licensed under the MIT License, which allows for open use, modification, and distribution. For more details, please refer to the [LICENSE](LICENSE) file.
 
