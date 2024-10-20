@@ -55,7 +55,7 @@ pretrained_path = "/root/hackathon/expmodel.pt" # replace this with the file fro
 
 model = Transformer(num_layers=num_layers, dim=dim, n_classes=1, heads=heads, dim_head=dim_head)
 
-model.load_state_dict(torch.load(pretrained_path))
+model.load_state_dict(torch.load(pretrained_path, map_location=torch.device('cpu')))
 model.to(device).eval()
 
 
