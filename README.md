@@ -51,14 +51,18 @@ CHOFormer is built on the Transformer architecture, utilizing multiple decoder l
 
 To generate optimized codons, we project the ESM-2 embeddings into a higher-dimensional space before passing them through two decoder layers with four attention heads. Then, decoder logits are mapped to a probability distribution over our custom tokenizer's vocabulary to select optimized codons. With this approach, we generate DNA sequences with significantly improved protein yield and translational efficiency.
 
+This dataset has been uploaded to Polaris [here](https://polarishub.io/datasets/vishrut64/cho-dna-expression-prediction-dataset).
 
 ### CHOExp (CHO Expression Predictor)
 CHOExp begins by accessing a dataset of 26,795 genes with corresponding RNA expression values. Genes with zero expression are removed, and the top 66% of genes that fall within three standard deviations are retained, resulting in a refined set of 13,253 genes. Expression values are then projected onto a log scale and normalized between 0 and 1 to allow sigmoid-based predictions. This dataset is split into training, validation, and test sets with an 80-10-10 split.
 
 The core of CHOExp is an encoder-only transformer model with a dimensionality of 384, 8 layers, and 4 attention heads. The model is trained to predict protein expression levels based on the RNA expression data from the training set. CHOExp does not use any DNA foundation models as it's base, taking in the raw one-hot encoded vocab indices as input. Each DNA sequence is truncated/padded to a length of 1024 3-mer tokens (3072 total base pairs), and a classifier token <CLS> is a added at the start of the sequence. This input is processed through the transformer's attention and MLP processes. The output embedding of the <CLS> token is selected and processed through to a classification head, which consists of a linear layer and sigmoid activation function. After training the model on the training dataset for 10 epochs (including validation after every epoch), the expression model was evaluated on the test set and used to filter for high-expression CHO Genes when training CHOFormer.
 
+This dataset has been uploaded to Polaris [here](https://polarishub.io/datasets/vishrut64/rna-expression-prediction-dataset).
+
+
 ## <h2 id="license">License and Credits</a> </h2>
-This was developed by: Rishab Jain†, Shrey Goel†, Vishrut Thoutam†, Dhruv Ramu, Balaji Rama, Darsh Mandera, Tyler Rose, Benjamin Chen
+This was developed by: Rishab Jain†, Shrey Goel†, Vishrut Thoutam†, Dhruv Ramu†, Balaji Rama†, Darsh Mandera, Tyler Rose, Benjamin Chen
 
 † These authors contributed equally
 
