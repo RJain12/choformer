@@ -307,7 +307,7 @@ const Home = () => {
             <HeroContainer>
                 <Hero>
                     <HeroH1>CHOFormer</HeroH1>
-                    <HeroP>Some text here.</HeroP>
+                    <HeroP>From Sequence to Success</HeroP>
                     <HeroButton to="/CHOFormer" style={{ marginRight: '1rem' }}>CHOFormer</HeroButton>
                     <HeroButton to="/choexp">CHOExp</HeroButton>
                     
