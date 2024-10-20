@@ -321,7 +321,7 @@ const Home = () => {
     </nav>
 </Header>
 
-(
+
         <HeroContainer>
             <Hero>
                 <img
@@ -352,7 +352,7 @@ const Home = () => {
                 <img src={architecture} alt="Model Architecture" style={{ width: '100%', margin: '20px 0' }} />
 
                 {/* Benchmarking Section */}
-                <h2>Benchmarking</h2>
+                <h2>Evaluation</h2>
                 <p>
                     The Codon Adaptation Index (CAI) is a key metric used to predict gene expression efficiency based on codon usage, strongly correlating with real-world protein expression levels (dos Reis et al.). Similarly, the Translational Adaptation Index (TAI) measures how efficiently a sequence can be translated into protein, offering insights into translational efficiency. By applying Anwar et al.'s (2023) methodology for protein abundance prediction, we observed significant improvements after CHOFormer optimization.
                 </p>
@@ -367,14 +367,91 @@ const Home = () => {
                 <p>
                     The mean CAI of the optimized sequences was 0.8471 (± 0.0874), compared to the original mean CAI of 0.6541 (± 0.0526). Likewise, the mean TAI of the optimized sequences was 0.682 (± 0.209), compared to the original TAI of 0.373 (± 0.112). These results demonstrate substantial improvements in gene expression efficiency and translation potential using CHOFormer.
                 </p>
+                <h2>License and Credits</h2>
+                The code for this project is accessible on <a href="https://github.com/RJain12/choformer/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">GitHub</a>.
+                <ol>
+    <li>Rishab Jain</li>
+    <li>Shrey Goel</li>
+    <li>Balaji Rama</li>
+    <li>Dhruv Ramu</li>
+    <li>Vishrut Thoutam</li>
+    <li>Darsh Mandera</li>
+    <li>Tyler Rose</li>
+    <li>Benjamin Chen</li>
+</ol>
+<p>
+    This project is licensed under the MIT License, which allows for open use, modification, and distribution. For more details, please refer to the <a href="https://github.com/RJain12/choformer/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">LICENSE</a> file.
+</p>
 
                 {/* Logo Section */}
                 <LogoContainer>
-                    <LogoBox>
+                    <LogoBox
+                                            style={{ position: 'relative' }}
+                                            onMouseEnter={(e) => {
+                                                const text = e.currentTarget.querySelector('.logo-text');
+                                                if (text) {
+                                                    text.style.visibility = 'visible';
+                                                    text.style.opacity = '1';
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                const text = e.currentTarget.querySelector('.logo-text');
+                                                if (text) {
+                                                    text.style.visibility = 'hidden';
+                                                    text.style.opacity = '0';
+                                                }
+                                            }}
+                                        >
                         <Logo src={ncbiLogo} alt="NCBI Logo" />
+                        <span
+                            style={{
+                                position: 'absolute',
+                                bottom: '-25px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                visibility: 'hidden',
+                                opacity: 0,
+                                transition: 'visibility 0s, opacity 0.2s ease',
+                                color: '#fff'
+                            }}
+                            className="logo-text"
+                        >
+                            NCBI
+                        </span>
                     </LogoBox>
-                    <LogoBox>
+                    <LogoBox                        style={{ position: 'relative' }}
+                        onMouseEnter={(e) => {
+                            const text = e.currentTarget.querySelector('.logo-text');
+                            if (text) {
+                                text.style.visibility = 'visible';
+                                text.style.opacity = '1';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            const text = e.currentTarget.querySelector('.logo-text');
+                            if (text) {
+                                text.style.visibility = 'hidden';
+                                text.style.opacity = '0';
+                            }
+                        }}
+                    >
+
                         <Logo src={openaiLogo} alt="OpenAI Logo" />
+                        <span
+                            style={{
+                                position: 'absolute',
+                                bottom: '-25px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                visibility: 'hidden',
+                                opacity: 0,
+                                transition: 'visibility 0s, opacity 0.2s ease',
+                                color: '#fff'
+                            }}
+                            className="logo-text"
+                        >
+                            PyTorch
+                        </span>
                     </LogoBox>
                     <LogoBox
                         style={{ position: 'relative' }}
@@ -453,6 +530,8 @@ const Home = () => {
             </Hero>
             {isMobile ? null : <HeroImage src={gene} alt="Gene" />}
         </HeroContainer>
+        <div style={{ margin: '20px' }}></div>
+
             <Footer>
                 <FooterP>&copy; 2024 CHOFormer. All rights reserved.</FooterP>
             </Footer>
