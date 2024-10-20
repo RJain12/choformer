@@ -1,6 +1,8 @@
+import json
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
+import requests
 
 app = FastAPI()
 
@@ -19,6 +21,8 @@ async def proxy(request: Request):
         # Get the JSON payload from the request
         payload = await request.json()
         
+        print(payload)
+        
         # Extract the target URL and request type from the payload
         target_url = payload.get("target_url")
         request_type = payload.get("request_type", "POST").upper()  # Default to POST if not specified
@@ -33,16 +37,20 @@ async def proxy(request: Request):
         payload_to_forward = payload.copy()
         payload_to_forward.pop("target_url", None)
         payload_to_forward.pop("request_type", None)
+
+        print('jo')
         
+        print(target_url, payload_to_forward)
         # Forward the request to the target URL
-        async with httpx.AsyncClient() as client:
-            if request_type == "GET":
-                response = await client.get(target_url, params=payload_to_forward)
-            else:  # POST
-                response = await client.post(target_url, json=payload_to_forward)
-        
+        if request_type == "GET":
+            response = requests.get(target_url, params=payload_to_forward)
+        else:  # POST
+            response = requests.post(target_url, json=payload_to_forward)
+
         # Return the response from the target URL
-        print(response.json(), 'rdr')
+        return response.json()
+
+ 
         return response.json()
     
     except httpx.RequestError as exc:
