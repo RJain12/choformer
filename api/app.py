@@ -13,7 +13,7 @@ import torch.nn.functional as F
 
 
 import sys
-sys.path.append('/home/ec2-user/hackathon/choformer')
+sys.path.append('/root/hackathon/choformer')
 
 from inference.transformer import Transformer
 
@@ -38,20 +38,20 @@ from omegaconf import OmegaConf
 from torch.nn import TransformerDecoderLayer, TransformerDecoder
 from transformers import AutoModel, AutoTokenizer
 
-config = OmegaConf.load("/home/ec2-user/hackathon/choformer/choformer/config.yaml")
+config = OmegaConf.load("/root/hackathon/choformer/choformer/config.yaml")
 
 print(config)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 choformer_ = DNADecoder(config).to(device).eval()
-choformer_.load_state_dict(torch.load("/home/ec2-user/hackathon/choformer/choformer/ckpts/best_model.pth", map_location=device))
+choformer_.load_state_dict(torch.load("/root/hackathon/choformer/choformer/ckpts/best_model.pth", map_location=device))
 
 esm_model = AutoModel.from_pretrained("facebook/esm2_t6_8M_UR50D").to(device)
 esm_tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")
 
 
-pretrained_path = "/home/ec2-user/hackathon/expmodel.pt" # replace this with the file from google drive
+pretrained_path = "/root/hackathon/expmodel.pt" # replace this with the file from google drive
 
 model = Transformer(num_layers=num_layers, dim=dim, n_classes=1, heads=heads, dim_head=dim_head)
 
