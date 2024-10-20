@@ -368,7 +368,7 @@ const Home = () => {
                     The mean CAI of the optimized sequences was 0.8471 (± 0.0874), compared to the original mean CAI of 0.6541 (± 0.0526). Likewise, the mean TAI of the optimized sequences was 0.682 (± 0.209), compared to the original TAI of 0.373 (± 0.112). These results demonstrate substantial improvements in gene expression efficiency and translation potential using CHOFormer.
                 </p>
                 <h2>License and Credits</h2>
-                The code for this project is accessible on <a href="https://github.com/RJain12/choformer/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">GitHub</a>.
+                The code for this project is accessible on <a href="https://github.com/RJain12/choformer" target="_blank" rel="noopener noreferrer">GitHub</a>.
                 <p>This was developed by:</p>
                 <ol>
     <li>Rishab Jain</li>
