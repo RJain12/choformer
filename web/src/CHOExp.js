@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { ChevronRight, Download } from "lucide-react";
 
 const CHOExp = () => {
   const [loading, setLoading] = useState(false);
@@ -163,19 +164,20 @@ const CHOExp = () => {
       fontSize: "0.9rem",
     },
     button: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
       width: "100%",
       padding: "0.75rem",
       backgroundColor: "#1c5ee1",
       color: "#fff",
       border: "none",
-      borderRadius: "6px",
+      borderRadius: "50px",
       fontSize: "1rem",
       fontWeight: "600",
       cursor: "pointer",
       transition: "all 0.3s ease",
       marginBottom: "1rem",
-      position: "relative",
-      overflow: "hidden",
       boxShadow: "0 4px 6px rgba(28, 94, 225, 0.2)",
       "&:hover": {
         backgroundColor: "#4d7ce9",
@@ -186,29 +188,16 @@ const CHOExp = () => {
         transform: "translateY(1px)",
         boxShadow: "0 2px 4px rgba(28, 94, 225, 0.2)",
       },
-      "&::after": {
-        content: '""',
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        width: "5px",
-        height: "5px",
-        backgroundColor: "rgba(255, 255, 255, 0.5)",
-        opacity: "0",
-        borderRadius: "100%",
-        transform: "scale(1, 1) translate(-50%)",
-        transformOrigin: "50% 50%",
-      },
-      "&:focus:not(:active)::after": {
-        animation: "ripple 0.8s ease-out",
-      },
     },
 
     fileInputLabel: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
       padding: "0.5rem 1rem",
       backgroundColor: "#1c5ee1",
       color: "#fff",
-      borderRadius: "6px",
+      borderRadius: "50px",
       cursor: "pointer",
       marginRight: "1rem",
       transition: "all 0.3s ease",
@@ -223,6 +212,50 @@ const CHOExp = () => {
         transform: "translateY(1px)",
         boxShadow: "0 2px 4px rgba(28, 94, 225, 0.2)",
       },
+    },
+
+    expressionContainer: {
+      position: "relative",
+      width: "100%",
+      height: "200px",
+      backgroundColor: "rgba(28, 94, 225, 0.1)",
+      borderRadius: "10px",
+      overflow: "hidden",
+      marginTop: "1rem",
+    },
+
+    expressionBubble: {
+      position: "absolute",
+      bottom: "10px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "50px",
+      height: "50px",
+      backgroundColor: "#1c5ee1",
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "#fff",
+      fontWeight: "bold",
+      boxShadow: "0 0 10px rgba(28, 94, 225, 0.5)",
+    },
+
+    expressionScale: {
+      position: "absolute",
+      bottom: "0",
+      left: "0",
+      width: "100%",
+      height: "10px",
+      backgroundColor: "rgba(255, 255, 255, 0.2)",
+    },
+
+    expressionMarker: {
+      position: "absolute",
+      bottom: "10px",
+      width: "2px",
+      height: "20px",
+      backgroundColor: "#fff",
     },
     loadingBar: {
       width: "100%",
@@ -273,6 +306,38 @@ const CHOExp = () => {
       "50%": { backgroundPosition: "100% 50%" },
       "100%": { backgroundPosition: "0% 50%" },
     },
+  };
+
+  const ExpressionDisplay = ({ value }) => {
+    const normalizedValue = Math.min(Math.max(value, 0), 1);
+    const bubblePosition = `${normalizedValue * 100}%`;
+
+    return (
+      <div style={styles.expressionContainer}>
+        <motion.div
+          style={{
+            ...styles.expressionBubble,
+            left: bubblePosition,
+          }}
+          initial={{ y: 200 }}
+          animate={{ y: 0 }}
+          transition={{ type: "spring", stiffness: 120, damping: 10 }}
+        >
+          {(normalizedValue * 100).toFixed(1)}%
+        </motion.div>
+        <div style={styles.expressionScale}>
+          {[0, 0.25, 0.5, 0.75, 1].map((mark) => (
+            <div
+              key={mark}
+              style={{
+                ...styles.expressionMarker,
+                left: `${mark * 100}%`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -330,7 +395,8 @@ const CHOExp = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Choose File
+              Choose File{" "}
+              <ChevronRight size={18} style={{ marginLeft: "5px" }} />
             </motion.label>
             <span style={styles.fileName}>
               {file ? file.name : "No file chosen"}
@@ -344,7 +410,8 @@ const CHOExp = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {loading ? "Processing..." : "Predict"}
+            {loading ? "Processing..." : "Predict"}{" "}
+            <ChevronRight size={18} style={{ marginLeft: "5px" }} />
           </motion.button>
 
           {loading && (
@@ -386,14 +453,7 @@ const CHOExp = () => {
               Prediction Result
             </h2>
             <p>Expression Level: {output.toFixed(4)}</p>
-            <div style={styles.expressionMeter}>
-              <motion.div
-                style={styles.expressionLevel}
-                initial={{ width: "0%" }}
-                animate={{ width: `${output * 100}%` }}
-                transition={{ duration: 1, ease: "easeInOut" }}
-              />
-            </div>
+            <ExpressionDisplay value={output} />
             <div
               style={{
                 display: "flex",
@@ -409,7 +469,8 @@ const CHOExp = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Download {format.toUpperCase()}
+                  Download {format.toUpperCase()}{" "}
+                  <Download size={18} style={{ marginLeft: "5px" }} />
                 </motion.button>
               ))}
             </div>

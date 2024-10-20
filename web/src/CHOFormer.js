@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { ChevronRight, Download, Upload } from "lucide-react";
 
 const CHOFormer = () => {
   const [loading, setLoading] = useState(false);
@@ -74,8 +76,23 @@ const CHOFormer = () => {
       marginRight: "1.5rem",
       color: "#fff",
       textDecoration: "none",
-      transition: "color 0.3s",
+      transition: "all 0.3s ease",
       fontSize: "1.1rem",
+      position: "relative",
+      "&::after": {
+        content: '""',
+        position: "absolute",
+        width: "0%",
+        height: "2px",
+        bottom: "-4px",
+        left: "50%",
+        backgroundColor: "#1c5ee1",
+        transition: "width 0.3s ease, left 0.3s ease",
+      },
+      "&:hover::after": {
+        width: "100%",
+        left: "0%",
+      },
     },
     content: {
       maxWidth: "800px",
@@ -86,26 +103,38 @@ const CHOFormer = () => {
       fontSize: "2.5rem",
       marginBottom: "1.5rem",
       fontWeight: "700",
+      textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
     },
     card: {
       background: "rgba(28, 94, 225, 0.1)",
-      borderRadius: "8px",
+      borderRadius: "12px",
       padding: "1.5rem",
       marginBottom: "1.5rem",
       backdropFilter: "blur(10px)",
-      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+      "&:hover": {
+        transform: "translateY(-5px)",
+        boxShadow: "0 12px 48px rgba(0, 0, 0, 0.15)",
+      },
     },
     textarea: {
       width: "100%",
-      padding: "0.5rem",
+      padding: "0.75rem",
       marginBottom: "1rem",
-      border: "1px solid #1c5ee1",
-      borderRadius: "4px",
+      border: "1px solid rgba(28, 94, 225, 0.5)",
+      borderRadius: "8px",
       fontSize: "1rem",
       color: "#fff",
       backgroundColor: "rgba(0, 0, 0, 0.2)",
       minHeight: "150px",
       resize: "vertical",
+      transition: "border-color 0.3s ease, box-shadow 0.3s ease",
+      "&:focus": {
+        outline: "none",
+        borderColor: "#1c5ee1",
+        boxShadow: "0 0 0 3px rgba(28, 94, 225, 0.3)",
+      },
     },
     fileInputContainer: {
       display: "flex",
@@ -116,76 +145,114 @@ const CHOFormer = () => {
       display: "none",
     },
     fileInputLabel: {
+      display: "flex",
+      alignItems: "center",
       padding: "0.5rem 1rem",
       backgroundColor: "#1c5ee1",
       color: "#fff",
-      borderRadius: "4px",
+      borderRadius: "50px",
       cursor: "pointer",
       marginRight: "1rem",
-      transition: "background-color 0.3s",
+      transition: "all 0.3s ease",
+      fontWeight: "600",
+      boxShadow: "0 4px 6px rgba(28, 94, 225, 0.2)",
+      "&:hover": {
+        backgroundColor: "#4d7ce9",
+        transform: "translateY(-2px)",
+        boxShadow: "0 6px 8px rgba(28, 94, 225, 0.3)",
+      },
     },
     fileName: {
       fontSize: "0.9rem",
+      opacity: 0.8,
     },
     button: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
       width: "100%",
       padding: "0.75rem",
       backgroundColor: "#1c5ee1",
       color: "#fff",
       border: "none",
-      borderRadius: "4px",
+      borderRadius: "50px",
       fontSize: "1rem",
+      fontWeight: "600",
       cursor: "pointer",
-      transition: "background-color 0.3s",
+      transition: "all 0.3s ease",
+      boxShadow: "0 4px 6px rgba(28, 94, 225, 0.2)",
+      "&:hover": {
+        backgroundColor: "#4d7ce9",
+        transform: "translateY(-2px)",
+        boxShadow: "0 6px 8px rgba(28, 94, 225, 0.3)",
+      },
+      "&:active": {
+        transform: "translateY(1px)",
+        boxShadow: "0 2px 4px rgba(28, 94, 225, 0.2)",
+      },
     },
     loadingBar: {
       width: "100%",
       height: "4px",
-      backgroundColor: "#ccc",
+      backgroundColor: "rgba(255, 255, 255, 0.2)",
       marginTop: "1rem",
+      borderRadius: "2px",
       overflow: "hidden",
-      position: "relative",
     },
     loadingProgress: {
       width: "30%",
       height: "100%",
       backgroundColor: "#1c5ee1",
-      position: "absolute",
+      borderRadius: "2px",
       animation: "loading 1.5s infinite",
     },
     error: {
-      backgroundColor: "rgba(255, 0, 0, 0.1)",
+      backgroundColor: "rgba(255, 107, 107, 0.1)",
       color: "#ff6b6b",
       padding: "1rem",
-      borderRadius: "4px",
+      borderRadius: "8px",
       marginBottom: "1rem",
+      boxShadow: "0 4px 6px rgba(255, 107, 107, 0.1)",
     },
     output: {
       backgroundColor: "rgba(0, 0, 0, 0.2)",
       padding: "1rem",
-      borderRadius: "4px",
+      borderRadius: "8px",
       whiteSpace: "pre-wrap",
       overflowX: "auto",
+      fontSize: "0.9rem",
+      lineHeight: "1.5",
     },
     footer: {
       marginTop: "auto",
       textAlign: "center",
       padding: "1rem 0",
+      color: "rgba(255, 255, 255, 0.7)",
     },
     downloadButton: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
       padding: "0.5rem 1rem",
       backgroundColor: "#1c5ee1",
       color: "#fff",
       border: "none",
-      borderRadius: "4px",
-      fontSize: "1rem",
+      borderRadius: "50px",
+      fontSize: "0.9rem",
+      fontWeight: "600",
       cursor: "pointer",
-      transition: "background-color 0.3s",
+      transition: "all 0.3s ease",
       marginRight: "1rem",
+      boxShadow: "0 4px 6px rgba(28, 94, 225, 0.2)",
+      "&:hover": {
+        backgroundColor: "#4d7ce9",
+        transform: "translateY(-2px)",
+        boxShadow: "0 6px 8px rgba(28, 94, 225, 0.3)",
+      },
     },
     "@keyframes loading": {
-      "0%": { left: "-30%" },
-      "100%": { left: "100%" },
+      "0%": { transform: "translateX(-100%)" },
+      "100%": { transform: "translateX(400%)" },
     },
     "@keyframes gradient": {
       "0%": { backgroundPosition: "0% 50%" },
@@ -198,25 +265,36 @@ const CHOFormer = () => {
     <div style={styles.app}>
       <header style={styles.header}>
         <nav style={styles.nav}>
-          <a href="/" style={styles.navItem}>
-            Home
-          </a>
-          <a href="/CHOFormer" style={styles.navItem}>
-            CHOFormer
-          </a>
-          <a href="/CHOExp" style={styles.navItem}>
-            CHOExp
-          </a>
-          <a href="/about" style={styles.navItem}>
-            About
-          </a>
+          {["Home", "CHOFormer", "CHOExp", "About"].map((item) => (
+            <motion.a
+              key={item}
+              href={`/${item.toLowerCase()}`}
+              style={styles.navItem}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {item}
+            </motion.a>
+          ))}
         </nav>
       </header>
 
       <main style={styles.content}>
-        <h1 style={styles.title}>CHO Expression Predictor</h1>
+        <motion.h1
+          style={styles.title}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          CHO Expression Predictor
+        </motion.h1>
 
-        <div style={styles.card}>
+        <motion.div
+          style={styles.card}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <textarea
             style={styles.textarea}
             placeholder="Enter sequence (e.g., FASTA format)"
@@ -232,31 +310,52 @@ const CHOFormer = () => {
               onChange={handleFileChange}
               style={styles.fileInput}
             />
-            <label htmlFor="fileInput" style={styles.fileInputLabel}>
-              Choose File
-            </label>
+            <motion.label
+              htmlFor="fileInput"
+              style={styles.fileInputLabel}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Choose File <Upload size={18} style={{ marginLeft: "5px" }} />
+            </motion.label>
             <span style={styles.fileName}>{fileName || "No file chosen"}</span>
           </div>
 
-          <button
+          <motion.button
             onClick={handleGoClick}
             style={styles.button}
             disabled={loading}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {loading ? "Processing..." : "Predict"}
-          </button>
+            {loading ? "Processing..." : "Predict"} <ChevronRight size={18} style={{ marginLeft: "5px" }} />
+          </motion.button>
 
           {loading && (
             <div style={styles.loadingBar}>
               <div style={styles.loadingProgress}></div>
             </div>
           )}
-        </div>
+        </motion.div>
 
-        {error && <div style={styles.error}>{error}</div>}
+        {error && (
+          <motion.div
+            style={styles.error}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {error}
+          </motion.div>
+        )}
 
         {output && (
-          <div style={styles.card}>
+          <motion.div
+            style={styles.card}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <h2
               style={{
                 ...styles.title,
@@ -274,23 +373,27 @@ const CHOFormer = () => {
                 marginTop: "1rem",
               }}
             >
-              <button
-                style={styles.downloadButton}
-                onClick={() => downloadFile(output, "fasta")}
-              >
-                Download FASTA
-              </button>
-              <button
-                style={styles.downloadButton}
-                onClick={() => downloadFile(output, "txt")}
-              >
-                Download TXT
-              </button>
+              {["fasta", "txt"].map((format) => (
+                <motion.button
+                  key={format}
+                  style={styles.downloadButton}
+                  onClick={() => downloadFile(output, format)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Download {format.toUpperCase()} <Download size={18} style={{ marginLeft: "5px" }} />
+                </motion.button>
+              ))}
             </div>
-          </div>
+          </motion.div>
         )}
 
-        <div style={styles.card}>
+        <motion.div
+          style={styles.card}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
           <h2
             style={{
               ...styles.title,
@@ -301,20 +404,12 @@ const CHOFormer = () => {
             How to Use This Tool
           </h2>
           <ol style={{ paddingLeft: "1.5rem" }}>
-            <li>
-              Enter your sequence data in FASTA format in the text area or
-              upload a file.
-            </li>
+            <li>Enter your sequence data in FASTA format in the text area or upload a file.</li>
             <li>Click the "Predict" button to start the analysis.</li>
-            <li>
-              Wait for the results to appear. This may take a few moments.
-            </li>
-            <li>
-              Once complete, you can view the results and download them in FASTA
-              or TXT format.
-            </li>
+            <li>Wait for the results to appear. This may take a few moments.</li>
+            <li>Once complete, you can view the results and download them in FASTA or TXT format.</li>
           </ol>
-        </div>
+        </motion.div>
       </main>
 
       <footer style={styles.footer}>
