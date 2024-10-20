@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 const CHOExp = () => {
   const [loading, setLoading] = useState(false);
@@ -149,15 +150,15 @@ const CHOExp = () => {
     fileInput: {
       display: "none",
     },
-    fileInputLabel: {
-      padding: "0.5rem 1rem",
-      backgroundColor: "#1c5ee1",
-      color: "#fff",
-      borderRadius: "4px",
-      cursor: "pointer",
-      marginRight: "1rem",
-      transition: "background-color 0.3s",
-    },
+    // fileInputLabel: {
+    //   padding: "0.5rem 1rem",
+    //   backgroundColor: "#1c5ee1",
+    //   color: "#fff",
+    //   borderRadius: "4px",
+    //   cursor: "pointer",
+    //   marginRight: "1rem",
+    //   transition: "background-color 0.3s",
+    // },
     fileName: {
       fontSize: "0.9rem",
     },
@@ -167,11 +168,61 @@ const CHOExp = () => {
       backgroundColor: "#1c5ee1",
       color: "#fff",
       border: "none",
-      borderRadius: "4px",
+      borderRadius: "6px",
       fontSize: "1rem",
+      fontWeight: "600",
       cursor: "pointer",
-      transition: "background-color 0.3s",
+      transition: "all 0.3s ease",
       marginBottom: "1rem",
+      position: "relative",
+      overflow: "hidden",
+      boxShadow: "0 4px 6px rgba(28, 94, 225, 0.2)",
+      "&:hover": {
+        backgroundColor: "#4d7ce9",
+        transform: "translateY(-2px)",
+        boxShadow: "0 6px 8px rgba(28, 94, 225, 0.3)",
+      },
+      "&:active": {
+        transform: "translateY(1px)",
+        boxShadow: "0 2px 4px rgba(28, 94, 225, 0.2)",
+      },
+      "&::after": {
+        content: '""',
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        width: "5px",
+        height: "5px",
+        backgroundColor: "rgba(255, 255, 255, 0.5)",
+        opacity: "0",
+        borderRadius: "100%",
+        transform: "scale(1, 1) translate(-50%)",
+        transformOrigin: "50% 50%",
+      },
+      "&:focus:not(:active)::after": {
+        animation: "ripple 0.8s ease-out",
+      },
+    },
+
+    fileInputLabel: {
+      padding: "0.5rem 1rem",
+      backgroundColor: "#1c5ee1",
+      color: "#fff",
+      borderRadius: "6px",
+      cursor: "pointer",
+      marginRight: "1rem",
+      transition: "all 0.3s ease",
+      fontWeight: "600",
+      boxShadow: "0 4px 6px rgba(28, 94, 225, 0.2)",
+      "&:hover": {
+        backgroundColor: "#4d7ce9",
+        transform: "translateY(-2px)",
+        boxShadow: "0 6px 8px rgba(28, 94, 225, 0.3)",
+      },
+      "&:active": {
+        transform: "translateY(1px)",
+        boxShadow: "0 2px 4px rgba(28, 94, 225, 0.2)",
+      },
     },
     loadingBar: {
       width: "100%",
@@ -228,25 +279,36 @@ const CHOExp = () => {
     <div style={styles.app}>
       <header style={styles.header}>
         <nav style={styles.nav}>
-          <a href="/" style={styles.navItem}>
-            Home
-          </a>
-          <a href="/CHOFormer" style={styles.navItem}>
-            CHOFormer
-          </a>
-          <a href="/CHOExp" style={styles.navItem}>
-            CHOExp
-          </a>
-          <a href="/about" style={styles.navItem}>
-            About
-          </a>
+          {["Home", "CHOFormer", "CHOExp", "About"].map((item) => (
+            <motion.a
+              key={item}
+              href={`/${item.toLowerCase()}`}
+              style={styles.navItem}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {item}
+            </motion.a>
+          ))}
         </nav>
       </header>
 
       <main style={styles.content}>
-        <h1 style={styles.title}>CHO Expression Predictor</h1>
+        <motion.h1
+          style={styles.title}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          CHO Expression Predictor
+        </motion.h1>
 
-        <div style={styles.card}>
+        <motion.div
+          style={styles.card}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <textarea
             style={styles.textarea}
             placeholder="Enter sequence (e.g., FASTA format)"
@@ -262,35 +324,58 @@ const CHOExp = () => {
               onChange={handleFileChange}
               style={styles.fileInput}
             />
-            <label htmlFor="fileInput" style={styles.fileInputLabel}>
+            <motion.label
+              htmlFor="fileInput"
+              style={styles.fileInputLabel}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               Choose File
-            </label>
+            </motion.label>
             <span style={styles.fileName}>
               {file ? file.name : "No file chosen"}
             </span>
           </div>
 
-          <button
+          <motion.button
             onClick={handleGoClick}
             style={styles.button}
             disabled={loading}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             {loading ? "Processing..." : "Predict"}
-          </button>
+          </motion.button>
 
           {loading && (
             <div style={styles.loadingBar}>
-              <div
-                style={{ ...styles.loadingProgress, width: `${progress}%` }}
-              ></div>
+              <motion.div
+                style={styles.loadingProgress}
+                initial={{ width: "0%" }}
+                animate={{ width: `${progress}%` }}
+              />
             </div>
           )}
-        </div>
+        </motion.div>
 
-        {error && <div style={styles.error}>{error}</div>}
+        {error && (
+          <motion.div
+            style={styles.error}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {error}
+          </motion.div>
+        )}
 
         {output !== null && (
-          <div style={styles.card}>
+          <motion.div
+            style={styles.card}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <h2
               style={{
                 ...styles.title,
@@ -302,9 +387,12 @@ const CHOExp = () => {
             </h2>
             <p>Expression Level: {output.toFixed(4)}</p>
             <div style={styles.expressionMeter}>
-              <div
-                style={{ ...styles.expressionLevel, width: `${output * 100}%` }}
-              ></div>
+              <motion.div
+                style={styles.expressionLevel}
+                initial={{ width: "0%" }}
+                animate={{ width: `${output * 100}%` }}
+                transition={{ duration: 1, ease: "easeInOut" }}
+              />
             </div>
             <div
               style={{
@@ -313,23 +401,27 @@ const CHOExp = () => {
                 marginTop: "1rem",
               }}
             >
-              <button
-                style={{ ...styles.button, width: "auto" }}
-                onClick={() => handleDownload("csv")}
-              >
-                Download CSV
-              </button>
-              <button
-                style={{ ...styles.button, width: "auto" }}
-                onClick={() => handleDownload("txt")}
-              >
-                Download TXT
-              </button>
+              {["csv", "txt"].map((format) => (
+                <motion.button
+                  key={format}
+                  style={{ ...styles.button, width: "48%" }}
+                  onClick={() => handleDownload(format)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Download {format.toUpperCase()}
+                </motion.button>
+              ))}
             </div>
-          </div>
+          </motion.div>
         )}
 
-        <div style={styles.card}>
+        <motion.div
+          style={styles.card}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
           <h2
             style={{
               ...styles.title,
@@ -353,7 +445,7 @@ const CHOExp = () => {
               download the results in CSV or TXT format.
             </li>
           </ol>
-        </div>
+        </motion.div>
       </main>
 
       <footer style={styles.footer}>
