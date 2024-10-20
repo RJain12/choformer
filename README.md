@@ -1,5 +1,5 @@
 ![image](public/CHOFormer_logo.png)
-[![LICENSE](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/Lattice-Automation/icor-codon-optimization/blob/master/LICENSE)
+<!-- [![LICENSE](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/Lattice-Automation/icor-codon-optimization/blob/master/LICENSE) -->
 
 # CHOFormer: Optimizing Protein Expression in CHO Cells
 [![Button Component](https://readme-components.vercel.app/api?component=button&text=Use This Tool: choformer.com)](https://choformer.com)
@@ -14,7 +14,7 @@
 
 ## <h2 id="about">About</a> </h2>
 
-The genetic code is degenerate; there are 61 sense codons encoding for only 20 standard amino acids. While synonymous codons encode the same amino acid, their selection can drastically influence the **speed and accuracy** of protein production. CHOFormer is a cutting-edge **Transformer decoder model** developed to optimize codon sequences for **improving protein expression** in Chinese Hamster Ovary (CHO) cells. As CHO cells are used in the production of nearly 70% of recombinant pharmaceuticals, including monoclonal antibodies and other therapeutic proteins, optimizing protein yield in these cells is a critical step in drug development. However, low protein yields in CHO cells present a significant challenge, slowing down the drug manufacturing process. CHOFormer addresses these challenges by leveraging a transformer decoder model to optimize codon selection based on the relationship between protein expression and codon usage patterns. This results in significantly improved protein yields, and the optimization process, which traditionally takes months in laboratory settings, is reduced to **mere minutes** with CHOFormer.
+The genetic code is degenerate; there are 61 sense codons encoding for only 20 standard amino acids. While synonymous codons encode the same amino acid, their selection can drastically influence the **speed and accuracy** of protein production. CHOFormer is a cutting-edge **Transformer decoder model** developed to optimize codon sequences for **improving protein expression** in Chinese Hamster Ovary (CHO) cells. As CHO cells are used in the production of nearly 70% of recombinant pharmaceuticals, including monoclonal antibodies and other therapeutic proteins, optimizing protein yield in these cells is a critical step in drug development. However, low protein yields in CHO cells present a significant challenge, slowing down the drug manufacturing process. CHOFormer addresses these challenges by leveraging a transformer decoder model to optimize codon selection based on the relationship between protein expression and codon usage patterns. This results in significantly improved protein yields (96.98% of proteins have higher expression with CHOFormer), and the optimization process, which traditionally takes months in laboratory settings, is reduced to **mere minutes** with CHOFormer.
 
 <!-- CHOFormer is a state-of-the-art **transformer decoder model** designed to optimize codon sequences for enhanced protein expression in Chinese Hamster Ovary (CHO) cells. Today, nearly 70% of recombinant pharmaceuticals are manufactured using the CHO genome in their research and development. This tool addresses the challenge of low recombinant protein yields in CHO cells, critical for drug manufacturing, particularly in the development of monoclonal antibodies and other therapeutic proteins. -->
 
@@ -37,12 +37,16 @@ In order to validate the effectiveness of CHOFormer’s codon optimization, we c
 Codon Adaptation Index (CAI) is a widely used metric to predict the efficiency of gene expression based on codon usage. It is highly correlated with real-world protein expression levels (dos Reis et al.), making it a reliable metric for assessing codon optimization.
 
 The mean CAI of the optimized sequences was 0.8471 with a standard deviation of 0.0874, compared to the original mean CAI of 0.6541 with a standard deviation of 0.0526. 
+
 ![public/boxplot_cai.png](public/boxplot_cai.png)
+
 The Translational Adaptation Index (TAI) measures the efficiency with which a sequence can be translated into protein, providing insights into translational efficiency. We used the methodology proposed by Anwar et al. (2023), which provides a more accurate prediction of protein abundance in real-world applications. 
 
 The mean TAI of the optimized sequences was 0.682 with a standard deviation of 0.209, compared to the original mean TAI of 0.373 with a standard deviation of 0.112. Both metrics indicate substantial improvement with CHOFormer.
+
 ![public/boxplot_tai.png](public/boxplot_tai.png)
 
+We also observed that after codon optimization, there is higher protein expression than the wild-type in 96.98% of cases with a sample size of 199 CHO proteins. The average expression was 2452 times higher.
 
 ## <h2 id="training">Training and Data Preprocessing</a> </h2>
 ### CHOFormer

@@ -26,3 +26,4 @@ expression/logs
 expression/data/old
 expression/tests
 venv
+.Rproj.user
