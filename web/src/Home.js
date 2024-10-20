@@ -287,27 +287,32 @@ const Home = () => {
     return (
         <AppContainer>
             <Header>
-                <NavToggle onClick={toggleNav}>
-                    &#9776; {/* Hamburger Icon */}
-                </NavToggle>
-                <nav>
-                    <NavUl isOpen={isNavOpen}>
-                        {isMobile && (
-                            <CloseButton onClick={closeNav}>
-                                &times; {/* Close Icon */}
-                            </CloseButton>
-                        )}
-                        <NavLi><NavA href="/">Home</NavA></NavLi>
-                        <NavLi><NavA href="/CHOFormer">CHOFormer</NavA></NavLi>
-                        <NavLi><NavA href="/choexp">CHOExp</NavA></NavLi>
-                        <NavLi><NavA href="/about">About</NavA></NavLi>
-                    </NavUl>
-                </nav>
-            </Header>
+    <NavToggle onClick={toggleNav}>
+        &#9776; {/* Hamburger Icon */}
+    </NavToggle>
+    <a href="/">
+        <img src="/CHOFormer_logo.png" alt="CHOFormer Logo" style={{ height: '40px', marginRight: '20px' }} />
+    </a>
+    <nav>
+        <NavUl isOpen={isNavOpen}>
+            {isMobile && (
+                <CloseButton onClick={closeNav}>
+                    &times; {/* Close Icon */}
+                </CloseButton>
+            )}
+            <NavLi><NavA href="/">Home</NavA></NavLi>
+            <NavLi><NavA href="/CHOFormer">CHOFormer</NavA></NavLi>
+            <NavLi><NavA href="/choexp">CHOExp</NavA></NavLi>
+            <NavLi><NavA href="/about">About</NavA></NavLi>
+        </NavUl>
+    </nav>
+</Header>
+
             <HeroContainer>
                 <Hero>
                     <HeroH1>CHOFormer</HeroH1>
-                    <HeroP>From Sequence to Success</HeroP>
+                    <HeroP>Optimizing Protein Expression in CHO Cells</HeroP>
+                    <HeroP>From Months to Minutes.</HeroP>
                     <HeroButton to="/CHOFormer" style={{ marginRight: '1rem' }}>CHOFormer</HeroButton>
                     <HeroButton to="/choexp">CHOExp</HeroButton>
                     
@@ -366,16 +371,16 @@ const Home = () => {
                     {/* Stats Section */}
                     <StatsSection>
                         <StatBox>
-                            <StatNumber>123</StatNumber>
-                            <StatCaption>ABC</StatCaption>
+                            <StatNumber>96.98%</StatNumber>
+                            <StatCaption>Improved Protein Expression</StatCaption>
                         </StatBox>
                         <StatBox>
-                            <StatNumber>456</StatNumber>
-                            <StatCaption>DEF</StatCaption>
+                            <StatNumber>2452</StatNumber>
+                            <StatCaption>Times Higher</StatCaption>
                         </StatBox>
                         <StatBox>
-                            <StatNumber>789</StatNumber>
-                            <StatCaption>HIJ</StatCaption>
+                            <StatNumber>0.85</StatNumber>
+                            <StatCaption>Mean CAI</StatCaption>
                         </StatBox>
                     </StatsSection>
                 </Hero>
