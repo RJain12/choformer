@@ -1,4 +1,4 @@
-![image](public/CHOFormer_logo.png)
+![image](public/CHOFormer_logo_notagline.png)
 <!-- [![LICENSE](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/Lattice-Automation/icor-codon-optimization/blob/master/LICENSE) -->
 
 # CHOFormer: Optimizing Protein Expression in CHO Cells
