@@ -1,0 +1,1 @@
+nohup bash run_train.sh > train_out_23.out 2> train_err_23.err &

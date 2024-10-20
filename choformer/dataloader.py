@@ -7,15 +7,17 @@ from transformers import AutoTokenizer, AutoModel
 from torch.utils.data import Dataset, DataLoader
 from torch.nn.utils.rnn import pad_sequence
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+esm_model = AutoModel.from_pretrained("facebook/esm2_t6_8M_UR50D").to(device)
+esm_tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")
 
 # Dataset class
 class ProteinDataset(Dataset):
     def __init__(self, csv_file, config):
         super(ProteinDataset, self).__init__()
         self.config = config
-        self.data = pd.read_csv(csv_file)[:5]
-        self.esm_model = AutoModel.from_pretrained("facebook/esm2_t6_8M_UR50D")
-        self.esm_tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")
+        self.data = pd.read_csv(csv_file)
         self.dna_tokenizer = tokenizer
         #self.dna_tokenizer = AutoTokenizer.from_pretrained(config.decoder_model.dna_model_path)
 
@@ -26,35 +28,62 @@ class ProteinDataset(Dataset):
 
     def __getitem__(self, idx):
         l = random.randint(15, 20)
-        protein_sequence = self.data.iloc[idx]['protein_sequence'][:20]
-        dna_sequence = self.data.iloc[idx]['dna_sequence'][:60]
+        protein_sequence = self.data.iloc[idx]['protein']
+        dna_sequence = self.data.iloc[idx]['dna']
         exp = self.data.iloc[idx]['expression']
+        
 
+        # print("starting esm tokenizedr")
         # protein sequence embeddings with ESM-3
-        protein_tokens = self.esm_tokenizer(
-            protein_sequence,
-            return_tensors='pt',
-            max_length=self.config.data.protein_max_length,
-            truncation=True,
-            padding=True
-        )
-        with torch.no_grad():
-            protein_embeddings = self.esm_model(**protein_tokens).last_hidden_state.squeeze(0)
+        # protein_tokens = self.esm_tokenizer(
+        #     protein_sequence,
+        #     return_tensors='pt',
+        #     max_length=self.config.data.protein_max_length,
+        #     truncation=True,
+        #     padding=True
+        # )
+        
+        
+        # with torch.no_grad():
+        #     protein_embeddings = self.esm_model(**protein_tokens).last_hidden_state.squeeze(0)
 
+        # print("finished esm tokenizer")
+        
         # labeled protein expression value
         expressions = torch.tensor(exp, dtype=torch.float) # expression value
 
         # tokenized dna sequence
         dna_tokens = tokenizer.encode([dna_sequence], max_length=self.dna_max_length)
+        
+        # print(dna_tokens[:10])
 
-        return protein_embeddings, dna_tokens, expressions
+        return protein_sequence, dna_tokens, expressions
 
 def collate_fn(batch):
-    protein_embeddings, dna_tokens, expressions = zip(*batch)
+    protein_sequences, dna_tokens, expressions = zip(*batch)
+    
+    protein_tokens = esm_tokenizer(
+        protein_sequences,
+        return_tensors='pt',
+        max_length=1024,
+        truncation=True,
+        padding="max_length",
+    ).to(device)
+    
+    # print(protein_tokens["input_ids"].size())
+    # print(dna_tokens[0].size())
+
+
+    with torch.no_grad():
+        protein_embeddings = esm_model(**protein_tokens).last_hidden_state.squeeze(0)
+
 
     # prepare only expression values and embeddings as AutoTokenizer already paded dna input ids
-    exps = torch.stack(expressions, dim=0)
-    padded_embeddings = pad_sequence([torch.tensor(l) for l in protein_embeddings], batch_first=True, padding_value=0)
+    exps = torch.stack(expressions, dim=0).to(device)
+    padded_embeddings = pad_sequence([torch.tensor(l, device=device) for l in protein_embeddings], batch_first=True, padding_value=0)
+    
+    # print("padded_embeds: ", protein_sequences)
+    # print("dna_token: ", dna_tokens[0])
     
     return padded_embeddings, dna_tokens, exps
 

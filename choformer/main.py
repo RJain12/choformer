@@ -6,10 +6,14 @@ from dataloader import get_dataloaders
 from tqdm import tqdm
 from esm_utils import ESMWrapper
 from model import DNADecoder
+import wandb
 from torch.nn.utils.rnn import pad_sequence
 
 
-def train(train_loader, val_loader, num_epochs, optimizer, device, choformer_model, ckpt_path):
+def train(train_loader, val_loader, num_epochs, optimizer, device, choformer_model, ckpt_path, config):
+    
+    wandb.login(key="b2e79ea06ca3e1963c1b930a9944bce6938bbb59")
+    wandb.init(project="choformer", name=f"transformer-layer_{config.decoder_model.layers}-heads_{config.decoder_model.heads}-dim_{config.decoder_model.decoder_size}")
     
     best_val_loss = float('inf')
     total_loss = 0
@@ -23,7 +27,7 @@ def train(train_loader, val_loader, num_epochs, optimizer, device, choformer_mod
         
         choformer_model.train()
 
-        train_bar = tqdm(total=len(train_loader), leave=True, file=sys.stdout, desc=F"TRAINING EPOCH: {epoch+1}")
+        train_bar = tqdm(total=len(train_loader), leave=True, file=sys.stdout, desc=F"TRAINING EPOCH {epoch+1}")
 
         for batch in train_loader:
             protein_embeddings, dna_tokens, true_exp = batch
@@ -31,7 +35,7 @@ def train(train_loader, val_loader, num_epochs, optimizer, device, choformer_mod
             dna_tokens = torch.stack(dna_tokens).squeeze(1).to(device)
 
             # ignore loss on first token generation – standard autoregressive implementation
-            dna_tokens[:, 0] = 0
+            # dna_tokens[:, 0] = 0
 
             # zero gradients
             optimizer.zero_grad()
@@ -40,9 +44,11 @@ def train(train_loader, val_loader, num_epochs, optimizer, device, choformer_mod
             outputs = choformer_model.generate(protein_embeddings, labels=dna_tokens)
 
             loss = outputs['loss']
-            ppl = torch.exp(loss / (dna_tokens != choformer_model.dna_tokenizer.vocab['[PAD]']).sum().item())
+            ppl = torch.exp(loss)
             total_loss += loss.item()
             total_ppl += ppl.item()
+            
+            wandb.log({"epoch": epoch+1, "train_loss": loss.item(), "train_ppl": ppl.item(), "hamming": outputs["hamming"].item()})
 
             loss.backward()
             optimizer.step()
@@ -53,7 +59,7 @@ def train(train_loader, val_loader, num_epochs, optimizer, device, choformer_mod
         ################## VALIDIATION LOOP ##################
         if val_loader:
             val_loss, val_ppl = _validation(val_loader,choformer_model, device)
-            #wandb.log({"epoch": epoch+1, "val_loss": val_loss, "val_ppl": val_ppl})
+            wandb.log({"epoch": epoch+1, "val_loss": val_loss, "val_ppl": val_ppl})
 
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
@@ -64,7 +70,6 @@ def train(train_loader, val_loader, num_epochs, optimizer, device, choformer_mod
         # log train and val results
         avg_train_loss = total_loss / len(train_loader)
         avg_train_ppl = total_ppl / len(train_loader)
-        #wandb.log({"epoch": {epoch+1}, "train_loss": avg_train_loss, "train_ppl": avg_train_ppl})
     
         torch.save(choformer_model.state_dict(), f'{ckpt_path}/epoch_{epoch+1}.pth')
     
@@ -85,12 +90,12 @@ def _validation(val_loader, choformer_model, device):
             protein_embeddings, true_exp = protein_embeddings.to(device), true_exp.to(device)
             dna_tokens = torch.stack(dna_tokens).squeeze(1).to(device)
 
-            dna_tokens[:, 0] = 0
+            # dna_tokens[:, 0] = 0
 
             outputs = choformer_model.generate(protein_embeddings, labels=dna_tokens)
 
             loss = outputs['loss']
-            ppl = torch.exp(loss / (dna_tokens != choformer_model.dna_tokenizer.vocab['[PAD]']).sum().item())
+            ppl = torch.exp(loss)
             total_val_loss += loss.item()
             total_val_ppl += ppl.item()
 
@@ -117,12 +122,12 @@ def test(test_loader, choformer_model, device):
             protein_embeddings, true_exp = protein_embeddings.to(device), true_exp.to(device)
             dna_tokens = torch.stack(dna_tokens).squeeze(1).to(device)
 
-            dna_tokens[:, 0] = 0
+            # dna_tokens[:, 0] = 0
 
             outputs = choformer_model.generate(protein_embeddings, labels=dna_tokens)
 
             loss = outputs['loss']
-            ppl = torch.exp(loss / (dna_tokens != choformer_model.dna_tokenizer.vocab['[PAD]']).sum().item())
+            ppl = torch.exp(loss)
             test_loss += loss.item()
             test_ppl += ppl.item()
 
@@ -141,12 +146,13 @@ def test(test_loader, choformer_model, device):
 def main(config_path):
     config = OmegaConf.load(config_path)
 
+    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+    
     # instantiate ESM and CHOFormer models
     #esm_model = ESMWrapper()
-    choformer_model = DNADecoder(config)
+    choformer_model = DNADecoder(config).to(device)
 
     # GPU and optimizer
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     optim = torch.optim.AdamW(choformer_model.parameters(),
                               lr=config.decoder_hparams.lr,
                               betas=(config.decoder_hparams.beta1, config.decoder_hparams.beta2))
@@ -155,7 +161,7 @@ def main(config_path):
     train_loader, val_loader, test_loader = get_dataloaders(config)
 
     # Train the model
-    train(train_loader, val_loader, config.decoder_hparams.num_epochs, optim, device, choformer_model, config.log.ckpt_path)
+    train(train_loader, val_loader, config.decoder_hparams.num_epochs, optim, device, choformer_model, config.log.ckpt_path, config)
     test(test_loader, choformer_model, device)
 
 

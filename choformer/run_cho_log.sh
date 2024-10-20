@@ -1,0 +1,1 @@
+nohup bash run_cho.sh > train_out.out 2> train_err.err &

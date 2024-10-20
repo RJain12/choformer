@@ -186,14 +186,21 @@ class DNADecoder(nn.Module):
 
         # map protein embeddings to decoder dimension size
         protein_embeddings = self.protein_to_deocder(protein_embeddings)
+        protein_embeddings = self.pos_embedding(protein_embeddings)
 
         padding_mask = self._generate_padding_mask(labels).to(protein_embeddings.device) # [bsz x seq_len]
         causual_mask = self._generate_causal_mask(seq_len).to(protein_embeddings.device) # [seq_len x seq_len]
 
-        dna_embeddings = self.dna_embeddings(labels)
-        dna_embeddings = self.pos_embedding(dna_embeddings)
+        # dna_embeddings = self.dna_embeddings(labels)
+        # print("dna embeds: ", dna_embeddings[:, 5, 0:5])
+        # print("prot: ", protein_embeddings[:, 0, 0])
+        # dna_embeddings = self.pos_embedding(dna_embeddings)
+        
+        # print(padding_mask)
+        
+        
 
-        decoder_out = self.decoder(tgt=dna_embeddings.float(),
+        decoder_out = self.decoder(tgt=protein_embeddings.float(),
                                    memory=protein_embeddings.float(),
                                    tgt_mask=causual_mask,
                                    tgt_is_causal=True,
@@ -203,6 +210,8 @@ class DNADecoder(nn.Module):
         #predicted_expression = self.predict_expression(decoder_out)
 
         loss = self.loss_fn(logits.view(-1, self.dna_vocab_size), labels.view(-1))
+        
+        # print(logits)
 
         return {
             "loss": loss,
@@ -214,10 +223,10 @@ class DNADecoder(nn.Module):
         """"Generation of all tokens simultaneously"""
         bsz = protein_embeddings.size(0)
         sequence_lengths = (labels != self.dna_tokenizer.vocab['[PAD]']).sum(dim=1)
-
         # Do one forward pass for all sequences
         outputs = self.forward(protein_embeddings, labels)
         logits = outputs['logits']
+        
 
         all_gen_tokens = []
         for i in range(bsz):
@@ -232,10 +241,13 @@ class DNADecoder(nn.Module):
         # Decode token IDs to codons
         generated_sequences = [self.dna_tokenizer.decode(gen_tokens.unsqueeze(0))[0] for gen_tokens in all_gen_tokens]
 
+        hamming = (labels[0][:all_gen_tokens[0].size(0)]!=all_gen_tokens[0]).sum()/all_gen_tokens[0].size(0)
+        
         return {
             "logits": logits,
             "generated_sequences": generated_sequences,
-            "loss": outputs.get('loss')  # The loss might not be computed if labels=None
+            "loss": outputs.get('loss'),  # The loss might not be computed if labels=None
+            "hamming": hamming
         }
     
     # def generate(self, protein_embeddings, labels, max_length=None):
