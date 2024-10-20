@@ -307,7 +307,8 @@ const Home = () => {
             <HeroContainer>
                 <Hero>
                     <HeroH1>CHOFormer</HeroH1>
-                    <HeroP>From Sequence to Success</HeroP>
+                    <HeroP>Optimizing Protein Expression in CHO Cells</HeroP>
+                    <HeroP>From Months to Minutes.</HeroP>
                     <HeroButton to="/CHOFormer" style={{ marginRight: '1rem' }}>CHOFormer</HeroButton>
                     <HeroButton to="/choexp">CHOExp</HeroButton>
                     
