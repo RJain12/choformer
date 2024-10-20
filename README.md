@@ -29,12 +29,10 @@ For **CHOFormer**, simply input the protein sequence and the optimized DNA seque
 For **CHOExp**, upload or paste the DNA sequence; the output will be the protein expression (normalized between 0 and 1).
 ![public/choexp_screenshot.png](public/choexp_screenshot.png)
 
-## <h2 id="benchmark">Benchmarking</a> </h2>
+## <h2 id="benchmark">Evaluation</a> </h2>
 
 
-In order to validate the effectiveness of CHOFormer’s codon optimization, we conducted a series of benchmarking tests using Codon Adaptation Index (CAI) and Translational Efficiency Metrics (TAI) on 3000 genes.
-
-Codon Adaptation Index (CAI) is a widely used metric to predict the efficiency of gene expression based on codon usage. It is highly correlated with real-world protein expression levels (dos Reis et al.), making it a reliable metric for assessing codon optimization.
+We utilized the Codon Adaptation Index (CAI) and Translational Efficiency Metrics (TAI) to evaluate the effectiveness of 3,000 codons optimized by CHOFormer.
 
 The mean CAI of the optimized sequences was 0.8471 with a standard deviation of 0.0874, compared to the original mean CAI of 0.6541 with a standard deviation of 0.0526. 
 
@@ -43,15 +41,8 @@ The mean CAI of the optimized sequences was 0.8471 with a standard deviation of 
     <img src="public/boxplot_tai.png" alt="TAI Boxplot" style="width: 45%;">
 </div>
 
-![public/boxplot_cai.png](public/boxplot_cai.png)
+The Codon Adaptation Index (CAI) predicts gene expression efficiency based on codon usage and correlates strongly with protein expression levels (dos Reis et al.), making it a reliable codon optimization metric. The Translational Adaptation Index (TAI) reflects how efficiently a sequence can be translated into protein, offering insights into translational efficiency. Using the methodology from Anwar et al. (2023), we found that CHOFormer-optimized sequences had a mean TAI of 0.682 (± 0.209), compared to the original 0.373 (± 0.112), showing significant improvements in both metrics.
 
-The Translational Adaptation Index (TAI) measures the efficiency with which a sequence can be translated into protein, providing insights into translational efficiency. We used the methodology proposed by Anwar et al. (2023), which provides a more accurate prediction of protein abundance in real-world applications. 
-
-The mean TAI of the optimized sequences was 0.682 with a standard deviation of 0.209, compared to the original mean TAI of 0.373 with a standard deviation of 0.112. Both metrics indicate substantial improvement with CHOFormer.
-
-![public/boxplot_tai.png](public/boxplot_tai.png)
-
-We also observed that after codon optimization, there is higher protein expression than the wild-type in 96.98% of cases with a sample size of 199 CHO proteins. The average expression was 2452 times higher.
 
 ## <h2 id="training">Training and Data Preprocessing</a> </h2>
 ### CHOFormer
