@@ -1,8 +1,8 @@
 import torch
-import tokenizer
+from . import tokenizer
 import torch.nn.functional as F
 import torch.nn as nn
-from esm_utils import ESMWrapper
+# from esm_utils import ESMWrapper
 #from lstm_train import LSTMClassifier
 from torch.nn import TransformerDecoderLayer, TransformerDecoder
 from transformers import AutoModel, AutoTokenizer
