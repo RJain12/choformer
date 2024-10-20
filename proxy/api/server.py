@@ -30,17 +30,19 @@ async def proxy(request: Request):
             raise HTTPException(status_code=400, detail="Invalid request type. Use 'GET' or 'POST'.")
         
         # Remove the target_url and request_type from the payload before forwarding
-        del payload["target_url"]
-        del payload["request_type"]
+        payload_to_forward = payload.copy()
+        payload_to_forward.pop("target_url", None)
+        payload_to_forward.pop("request_type", None)
         
         # Forward the request to the target URL
         async with httpx.AsyncClient() as client:
             if request_type == "GET":
-                response = await client.get(target_url, params=payload)
+                response = await client.get(target_url, params=payload_to_forward)
             else:  # POST
-                response = await client.post(target_url, json=payload)
+                response = await client.post(target_url, json=payload_to_forward)
         
         # Return the response from the target URL
+        print(response.json(), 'rdr')
         return response.json()
     
     except httpx.RequestError as exc:
