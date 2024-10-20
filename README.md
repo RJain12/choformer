@@ -62,14 +62,23 @@ This was developed by: Rishab Jain†, Shrey Goel†, Vishrut Thoutam†, Dhruv 
 
 † These authors contributed equally
 
-Affiliations
+
+Affiliations:
+
 R.J. - Harvard College and Massachusetts General Hospital. Corresponding: rkjain@mgh.harvard.edu
+
 S.G. - Duke University and Programmable Biology Laboratory.
+
 V.T. - Programmable Biology Laboratory.
+
 D.R. - Indian Institute of Science.
+
 B.R. - Rutgers University.
+
 D.M. - Duke University and Center for Virtual Imaging Trials.
+
 T.R. - Bindwell & Monta Vista High.
+
 B.C. - University of California San Diego and UCSD Skaggs.
 
 This project is licensed under the MIT License, which allows for open use, modification, and distribution. For more details, please refer to the [LICENSE](LICENSE) file.
