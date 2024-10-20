@@ -408,12 +408,12 @@ const Home = () => {
                             <StatCaption>Improved Protein Expression</StatCaption>
                         </StatBox>
                         <StatBox>
-                            <StatNumber>2452</StatNumber>
-                            <StatCaption>Times Higher</StatCaption>
+                            <StatNumber>2452×</StatNumber>
+                            <StatCaption>Increase in Protein Expression</StatCaption>
                         </StatBox>
                         <StatBox>
-                            <StatNumber>0.85</StatNumber>
-                            <StatCaption>Mean CAI</StatCaption>
+                            <StatNumber>0.847</StatNumber>
+                            <StatCaption>Mean Codon Adaptation Index</StatCaption>
                         </StatBox>
                     </StatsSection>
                 </Hero>
