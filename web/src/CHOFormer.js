@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { ChevronRight, Download, Upload } from "lucide-react";
@@ -9,6 +9,7 @@ const CHOFormer = () => {
   const [input, setInput] = useState("");
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
+  const fileInputRef = useRef(null);
 
   const handleGoClick = async () => {
     setLoading(true);
@@ -24,7 +25,7 @@ const CHOFormer = () => {
           request_type: "POST",
         }
       );
-      setOutput(response.data.sequences);
+      setOutput(response.data.sequences[0]);
     } catch (err) {
       setError(
         "An error occurred while processing your request. Please try again."
@@ -37,8 +38,24 @@ const CHOFormer = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setFileName(file ? file.name : "");
-    // Here you would typically read the file contents and set the input
+    if (file) {
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setInput(event.target.result);
+      };
+      reader.onerror = (error) => {
+        setError("Error reading file: " + error.message);
+      };
+      reader.readAsText(file);
+    } else {
+      setFileName("");
+      setInput("");
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current.click();
   };
 
   const downloadFile = (content, fileType) => {
@@ -54,6 +71,28 @@ const CHOFormer = () => {
   };
 
   const styles = {
+    uploadButton: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "0.5rem 1rem",
+        backgroundColor: "#1c5ee1",
+        color: "#fff",
+        border: "none",
+        borderRadius: "50px",
+        fontSize: "0.9rem",
+        fontWeight: "600",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        marginRight: "1rem",
+        boxShadow: "0 4px 6px rgba(28, 94, 225, 0.2)",
+        "&:hover": {
+          backgroundColor: "#4d7ce9",
+          transform: "translateY(-2px)",
+          boxShadow: "0 6px 8px rgba(28, 94, 225, 0.3)",
+        },
+      },
+  
     app: {
       background: "linear-gradient(270deg, #1c5ee1, hsl(0, 0%, 0%))",
       backgroundSize: "400% 400%",
@@ -215,14 +254,15 @@ const CHOFormer = () => {
       boxShadow: "0 4px 6px rgba(255, 107, 107, 0.1)",
     },
     output: {
-      backgroundColor: "rgba(0, 0, 0, 0.2)",
-      padding: "1rem",
-      borderRadius: "8px",
-      whiteSpace: "pre-wrap",
-      overflowX: "auto",
-      fontSize: "0.9rem",
-      lineHeight: "1.5",
-    },
+        backgroundColor: "rgba(0, 0, 0, 0.2)",
+        padding: "1rem",
+        borderRadius: "8px",
+        fontSize: "0.9rem",
+        lineHeight: "1.5",
+        wordWrap: "break-word",
+        whiteSpace: "pre-wrap",
+        maxWidth: "100%",
+      },
     footer: {
       marginTop: "auto",
       textAlign: "center",
@@ -261,6 +301,25 @@ const CHOFormer = () => {
     },
   };
 
+  const formatOutput = (output) => {
+    // Split the output into lines
+    console.log('o', output)
+    const lines = output.split('\n');
+    
+    // Process each line
+    const formattedLines = lines.map(line => {
+      // If the line is a FASTA header (starts with '>'), don't wrap it
+      if (line.startsWith('>')) {
+        return line;
+      }
+      // For sequence lines, wrap every 60 characters
+      return line.match(/.{1,60}/g).join('\n');
+    });
+
+    // Join the lines back together
+    return formattedLines.join('\n');
+  };
+
   return (
     <div style={styles.app}>
       <header style={styles.header}>
@@ -297,7 +356,7 @@ const CHOFormer = () => {
         >
           <textarea
             style={styles.textarea}
-            placeholder="Enter sequence (e.g., FASTA format)"
+            placeholder="Enter sequence (e.g., FASTA format) or upload a file"
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
@@ -305,19 +364,20 @@ const CHOFormer = () => {
           <div style={styles.fileInputContainer}>
             <input
               type="file"
-              accept=".csv,.fasta,.exe"
+              accept=".csv,.fasta,.exe,.txt"
               id="fileInput"
+              ref={fileInputRef}
               onChange={handleFileChange}
               style={styles.fileInput}
             />
-            <motion.label
-              htmlFor="fileInput"
-              style={styles.fileInputLabel}
+            <motion.button
+              onClick={handleUploadClick}
+              style={styles.uploadButton}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Choose File <Upload size={18} style={{ marginLeft: "5px" }} />
-            </motion.label>
+              Upload File <Upload size={18} style={{ marginLeft: "5px" }} />
+            </motion.button>
             <span style={styles.fileName}>{fileName || "No file chosen"}</span>
           </div>
 
@@ -365,7 +425,7 @@ const CHOFormer = () => {
             >
               Prediction Results
             </h2>
-            <pre style={styles.output}>{output}</pre>
+            <pre style={styles.output}>{formatOutput(output)}</pre>
             <div
               style={{
                 display: "flex",
@@ -405,6 +465,7 @@ const CHOFormer = () => {
           </h2>
           <ol style={{ paddingLeft: "1.5rem" }}>
             <li>Enter your sequence data in FASTA format in the text area or upload a file.</li>
+            <li>If you upload a file, its contents will be displayed in the text area for review or editing.</li>
             <li>Click the "Predict" button to start the analysis.</li>
             <li>Wait for the results to appear. This may take a few moments.</li>
             <li>Once complete, you can view the results and download them in FASTA or TXT format.</li>
