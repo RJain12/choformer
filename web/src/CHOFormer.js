@@ -345,7 +345,7 @@ const CHOFormer = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          CHO Expression Predictor
+          CHO Codon Optimization (CHOFormer)
         </motion.h1>
 
         <motion.div
@@ -474,7 +474,7 @@ const CHOFormer = () => {
       </main>
 
       <footer style={styles.footer}>
-        <p>&copy; 2024 Dhruv Ramu. All rights reserved.</p>
+        <p>&copy; 2024 Choformer. All rights reserved.</p>
       </footer>
     </div>
   );

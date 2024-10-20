@@ -276,7 +276,7 @@ const Tool = () => {
                 </main>
             </div>
             <footer style={styles.footer}>
-                <p style={styles.footerP}>&copy; 2024 Dhruv Ramu. All rights reserved.</p>
+                <p style={styles.footerP}>&copy; 2024 Choformer. All rights reserved.</p>
             </footer>
         </div>
     );

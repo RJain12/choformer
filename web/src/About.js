@@ -239,7 +239,7 @@ const About = () => {
                 </LogoContainer>
             </ContentContainer>
             <Footer>
-                <FooterP>&copy; 2024 Dhruv Ramu. All rights reserved.</FooterP>
+                <FooterP>&copy; 2024 Choformer. All rights reserved.</FooterP>
             </Footer>
         </AppContainer>
     );

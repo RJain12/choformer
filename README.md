@@ -65,10 +65,10 @@ The core of CHOExp is an encoder-only transformer model with a dimensionality of
 This was developed by:
 1. Rishab Jain
 2. Shrey Goel
-3. Dhruv Ramu
-4. Vishrut Thoutam
-5. Darsh Mandera
-6. Balaji Rama
+3. Balaji Rama
+4. Dhruv Ramu
+5. Vishrut Thoutam
+6. Darsh Mandera
 7. Tyler Rose
 8. Benjamin Chen
 
