@@ -25,9 +25,9 @@ The genetic code is degenerate; there are 61 sense codons encoding for only 20 s
 
 Our [website](https://choformer.com) allows for the easy usage of the tool.
 For **CHOFormer**, simply input the protein sequence and the optimized DNA sequence will be outputted—it can be downloaded as a FASTA or copied directly.
-![public/choforma_screenshot.png](public/choforma_screenshot.png)
+![public/choformer_output.png](public/choformer_output.png)
 For **CHOExp**, upload or paste the DNA sequence; the output will be the protein expression (normalized between 0 and 1).
-![public/choexp_screenshot.png](public/choexp_screenshot.png)
+![public/choexp_output.png](public/choexp_output.png)
 
 ## <h2 id="benchmark">Evaluation</a> </h2>
 
