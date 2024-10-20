@@ -366,16 +366,16 @@ const Home = () => {
                     {/* Stats Section */}
                     <StatsSection>
                         <StatBox>
-                            <StatNumber>123</StatNumber>
-                            <StatCaption>ABC</StatCaption>
+                            <StatNumber>96.98%</StatNumber>
+                            <StatCaption>Improved Protein Expression</StatCaption>
                         </StatBox>
                         <StatBox>
-                            <StatNumber>456</StatNumber>
-                            <StatCaption>DEF</StatCaption>
+                            <StatNumber>2452</StatNumber>
+                            <StatCaption>Times Higher</StatCaption>
                         </StatBox>
                         <StatBox>
-                            <StatNumber>789</StatNumber>
-                            <StatCaption>HIJ</StatCaption>
+                            <StatNumber>0.85</StatNumber>
+                            <StatCaption>Mean CAI</StatCaption>
                         </StatBox>
                     </StatsSection>
                 </Hero>
