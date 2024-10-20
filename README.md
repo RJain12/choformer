@@ -43,11 +43,12 @@ The mean CAI of the optimized sequences was 0.8471 (± 0.0874), compared to the 
 
 ## <h2 id="training">Data Curation and Training Implementation</a> </h2>
 ### CHOFormer
-We accessed a dataset of 97,000 CHO gene sequences from the NCBI database, focusing exclusively on protein-coding genes. These sequences are then filtered to retain those between 300 and 8000 base pairs, resulting in a refined dataset of 86,632 sequences. To reduce redundancy, `cd-hit-est` is employed to cluster the sequences based on an 8-word window and 90% nucleotide similarity, producing 47,713 sequences. The nucleotide sequences are then translated into their corresponding amino acid sequences, and any unnatural amino acids are removed to ensure biological relevance.
+We accessed a dataset of 97,000 CHO gene sequences from the NCBI database, focusing exclusively on protein-coding genes. These sequences are then filtered to retain those between 300 and 8000 base pairs, resulting in a refined dataset of 86,632 sequences. To reduce redundancy, `cd-hit-est` is employed to cluster the sequences based on an 8-word window and 90% nucleotide similarity, producing 47,713 sequences. The nucleotide sequences are then translated into their corresponding amino acid sequences, and any unnatural amino acids are removed to ensure biological relevance. The dataset is then split into training, validation, and test sets in an 80-10-10 ratio.
 
-The `ESM-2-150M` model is used to extract protein embeddings, which capture essential features of the amino acid sequences. The dataset is then split into training, validation, and test sets in an 80-10-10 ratio.
+CHOFormer is built on the Transformer architecture, utilizing multiple decoder layers to map `ESM-2-150M` protein sequence embeddings to optimized codon sequences. To bridge the gap between amino acids and codon usage, we engineered a custom 3-mer tokenizer specifically for DNA sequences to accurately represent all codons.
 
-The core of CHOFormer’s process involves a Transformer decoder that takes the protein embeddings from ESM-2 as input. The model, with a 128-dimensional space, 2 layers, and 4 attention heads, decodes the embeddings to generate optimized DNA sequences. The output is mapped to the DNA codon vocabulary, ensuring that the codons are correctly translated into their corresponding nucleotide sequences. 
+To generate optimized codons, we project the ESM-2 embeddings into a higher-dimensional space before passing them through two decoder layers with four attention heads. Then, decoder logits are mapped to a probability distribution over our custom tokenizer's vocabulary to select optimized codons. With this approach, we generate DNA sequences with significantly improved protein yield and translational efficiency.
+
 
 ### CHOExp (CHO Expression Predictor)
 CHOExp begins by accessing a dataset of 26,795 genes with corresponding RNA expression values. Genes with zero expression are removed, and the top 66% of genes that fall within three standard deviations are retained, resulting in a refined set of 13,253 genes. This dataset is split into training, validation, and test sets.
