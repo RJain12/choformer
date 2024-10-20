@@ -9,9 +9,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 import torch
+import torch.nn.functional as F
+
 
 import sys
 sys.path.append('C:\\Users\\rkfam\\choformer')
+
+from inference.transformer import Transformer
+
+# config
+num_layers = 8
+dim = 384
+dim_head = 128
+heads = 4
+
+import torch
+
 
 
 import torch.nn.functional as F
@@ -36,6 +49,48 @@ choformer_.load_state_dict(torch.load("C:\\Users\\rkfam\\choformer\\choformer\\c
 
 esm_model = AutoModel.from_pretrained("facebook/esm2_t6_8M_UR50D").to(device)
 esm_tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")
+
+
+pretrained_path = "C:\\Users\\rkfam\\Downloads\\expmodel.pt" # replace this with the file from google drive
+
+model = Transformer(num_layers=num_layers, dim=dim, n_classes=1, heads=heads, dim_head=dim_head)
+
+model.load_state_dict(torch.load(pretrained_path))
+model.to(device).eval()
+
+
+vocab = {"[CLS]": 0, "[EOS]": 1, "[PAD]": 2}
+AGCT = {"A": 0, "G": 1, "C": 2, "T": 3, "N": 4}
+
+def process_codon(seq: str):
+    try:
+        idx_1 = AGCT[seq[0]]
+        idx_2 = AGCT[seq[1]]
+        idx_3 = AGCT[seq[2]]
+        return 25 * idx_1 + 5 * idx_2 + idx_3 + 3
+    except:
+        return 1  # return a default index for invalid codons
+
+def embed(seq: str):
+    codons = [seq[i:i+3] for i in range(0, len(seq), 3)]
+    tokens = [0, *[process_codon(codon) for codon in codons]]
+    # Ensure tokens do not exceed max_length
+    
+    return torch.tensor(tokens).unsqueeze(0)
+
+def run_choexp_inference(dna_sequences: list[str]):
+    res = []
+    for seq in dna_sequences:
+        inputs = embed(seq)
+        att = torch.ones_like(inputs)
+        
+        output = model(inputs.to(device), att.to(device))
+        normalized_output = F.sigmoid(output)
+        
+        # print(f"Expression: {normalized_output.item()}")
+        res.append(normalized_output.item())
+    return res
+
 
 def run_choformer_inference(protein_sequences: list[str]):
     print('p', protein_sequences)
@@ -73,6 +128,12 @@ class ProteinSequences(BaseModel):
 class GeneratedSequences(BaseModel):
     sequences: list[str]
 
+class DNASequences(BaseModel):
+    sequences: list[str]
+
+class ExpressionLevels(BaseModel):
+    levels: list[float]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -85,6 +146,14 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
+
+@app.post("/choexp_inference/", response_model=ExpressionLevels)
+async def choexp_inference(dna_sequences: DNASequences):
+    try:
+        expression_levels = run_choexp_inference(dna_sequences.sequences)
+        return ExpressionLevels(levels=expression_levels)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/choformer_inference/", response_model=GeneratedSequences)
 async def choformer_inference(protein_sequences: ProteinSequences):

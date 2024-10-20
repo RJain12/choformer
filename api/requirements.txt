@@ -58,3 +58,4 @@ urllib3==2.2.3
 uvicorn==0.32.0
 wrapt==1.16.0
 zipp==3.20.2
+rotary-embedding-torch
