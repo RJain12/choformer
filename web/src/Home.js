@@ -321,50 +321,70 @@ const Home = () => {
     </nav>
 </Header>
 
-            <HeroContainer>
-                <Hero>
-                    {/* <HeroH1>CHOFormer</HeroH1> */}
-                    <img src={CHOFormerlogo_notagline}
-                    alt="CHOFormer Logo" 
-                    style={{ height: '150px', marginRight: '75px' }} />
-                    <HeroP>Improving codon optimization of genes for maximal recombinant expression in Chinese Hamster Ovary (CHO) expression systems.</HeroP>
-                    {/* <HeroP>From Months to Minutes.</HeroP> */}
-                    <HeroButton to="/CHOFormer" style={{ marginRight: '1rem' }}>CHOFormer</HeroButton>
-                    <HeroButton to="/choexp">CHOExp</HeroButton>
-                    
-                    {/* Stats Section */}
-                    {/* <StatsSection>
-                        <StatBox>
-                            <StatNumber>96.98%</StatNumber>
-                            <StatCaption>Proteins have Improved Expression</StatCaption>
-                        </StatBox>
-                        <StatBox>
-                            <StatNumber>2452×</StatNumber>
-                            <StatCaption>Increase in Protein Expression</StatCaption>
-                        </StatBox>
-                        <StatBox>
-                            <StatNumber>0.847</StatNumber>
-                            <StatCaption>Mean Codon Adaptation Index</StatCaption>
-                        </StatBox>
-                    </StatsSection> */}
-                                    {/* Logo section */}
-                                    <LogoContainer>
-                        <LogoBox>
-                            <Logo src={ncbiLogo} alt="NCBI Logo" />
-                        </LogoBox>
-                        <LogoBox>
-                            <Logo src={openaiLogo} alt="OpenAI Logo" />
-                        </LogoBox>
-                        <LogoBox
-                        
-                        style={{ position: 'relative' }} 
+(
+        <HeroContainer>
+            <Hero>
+                <img
+                    src={CHOFormerlogo_notagline}
+                    alt="CHOFormer Logo"
+                    style={{ height: '150px', marginRight: '75px' }}
+                />
+                <HeroP>
+                    Improving codon optimization of genes for maximal recombinant expression in Chinese Hamster Ovary (CHO) expression systems.
+                </HeroP>
+                <HeroButton to="/CHOFormer" style={{ marginRight: '1rem' }}>CHOFormer</HeroButton>
+                <HeroButton to="/choexp">CHOExp</HeroButton>
+
+                {/* Overview Section */}
+                <h2>Overview</h2>
+                <p>
+                    The genetic code is degenerate; there are 61 sense codons encoding for only 20 standard amino acids. While synonymous codons encode the same amino acid, their selection can drastically influence the speed and accuracy of protein production. Chinese Hamster Ovary (CHO) cells are responsible for producing nearly 70% of recombinant pharmaceuticals, such as monoclonal antibodies and therapeutic proteins. However, low protein yields in these cells pose a major challenge, often delaying the drug manufacturing process.
+                    To address these challenges, we present CHOFormer, a cutting-edge generative model that produces optimized codon sequences for improved protein expression in CHO cells. Specifically, we leverage the Transformer decoder-only model to optimize codon selection solely based on information-rich protein sequence embeddings. With CHOFormer, we observe a mean Codon Adaptation Index (CAI) of 0.847, indicating that CHOFormer-generated codon sequences are highly adapted for efficient translation in CHO cells. Overall, CHOFormer is a computational pipeline that revolutionizes the codon optimization process, reducing what traditionally takes months in a laboratory setting to mere minutes.
+                </p>
+
+                {/* Model Section */}
+                <h2>Model</h2>
+                <p>
+                    CHOFormer is a Transformer decoder that takes the protein embeddings from ESM-2 as input. The model, with a 128-dimensional space, 2 layers, and 4 attention heads, decodes the embeddings to generate optimized DNA sequences. The output is mapped to the DNA codon vocabulary and provided to the user as a DNA sequence. The core of CHOExp is an encoder-only transformer model with a dimensionality of 384, 8 layers, and 4 attention heads. The model is trained to predict protein expression levels based on the RNA expression data from the training set.
+                </p>
+
+                {/* Image: Model Architecture */}
+                <img src={architecture} alt="Model Architecture" style={{ width: '100%', margin: '20px 0' }} />
+
+                {/* Benchmarking Section */}
+                <h2>Benchmarking</h2>
+                <p>
+                    The Codon Adaptation Index (CAI) is a key metric used to predict gene expression efficiency based on codon usage, strongly correlating with real-world protein expression levels (dos Reis et al.). Similarly, the Translational Adaptation Index (TAI) measures how efficiently a sequence can be translated into protein, offering insights into translational efficiency. By applying Anwar et al.'s (2023) methodology for protein abundance prediction, we observed significant improvements after CHOFormer optimization.
+                </p>
+
+                {/* Side by side images: boxplot_cai and boxplot_tai */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', margin: '20px 0' }}>
+                    <img src={boxplot_cai} alt="CAI Boxplot" style={{ width: '48%' }} />
+                    <img src={boxplot_tai} alt="TAI Boxplot" style={{ width: '48%' }} />
+                </div>
+
+                {/* Benchmarking Results */}
+                <p>
+                    The mean CAI of the optimized sequences was 0.8471 (± 0.0874), compared to the original mean CAI of 0.6541 (± 0.0526). Likewise, the mean TAI of the optimized sequences was 0.682 (± 0.209), compared to the original TAI of 0.373 (± 0.112). These results demonstrate substantial improvements in gene expression efficiency and translation potential using CHOFormer.
+                </p>
+
+                {/* Logo Section */}
+                <LogoContainer>
+                    <LogoBox>
+                        <Logo src={ncbiLogo} alt="NCBI Logo" />
+                    </LogoBox>
+                    <LogoBox>
+                        <Logo src={openaiLogo} alt="OpenAI Logo" />
+                    </LogoBox>
+                    <LogoBox
+                        style={{ position: 'relative' }}
                         onMouseEnter={(e) => {
                             const text = e.currentTarget.querySelector('.logo-text');
                             if (text) {
                                 text.style.visibility = 'visible';
                                 text.style.opacity = '1';
                             }
-                        }} 
+                        }}
                         onMouseLeave={(e) => {
                             const text = e.currentTarget.querySelector('.logo-text');
                             if (text) {
@@ -372,70 +392,67 @@ const Home = () => {
                                 text.style.opacity = '0';
                             }
                         }}
-                        
-                        >
-                            <Logo src={awsLogo} large alt="AWS Logo" />
-                            <span 
-                                style={{ 
-                                    position: 'absolute', 
-                                    bottom: '-25px', 
-                                    left: '50%', 
-                                    transform: 'translateX(-50%)', 
-                                    visibility: 'hidden', 
-                                    opacity: 0, 
-                                    transition: 'visibility 0s, opacity 0.2s ease', 
-                                    color: '#fff' 
-                                }} 
-                                className="logo-text"
-                            >
-                                EC2
-                            </span>
-                        </LogoBox>
-                        <LogoBox 
-                            style={{ position: 'relative' }} 
-                            onMouseEnter={(e) => {
-                                const text = e.currentTarget.querySelector('.logo-text');
-                                if (text) {
-                                    text.style.visibility = 'visible';
-                                    text.style.opacity = '1';
-                                }
-                            }} 
-                            onMouseLeave={(e) => {
-                                const text = e.currentTarget.querySelector('.logo-text');
-                                if (text) {
-                                    text.style.visibility = 'hidden';
-                                    text.style.opacity = '0';
-                                }
+                    >
+                        <Logo src={awsLogo} large alt="AWS Logo" />
+                        <span
+                            style={{
+                                position: 'absolute',
+                                bottom: '-25px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                visibility: 'hidden',
+                                opacity: 0,
+                                transition: 'visibility 0s, opacity 0.2s ease',
+                                color: '#fff'
                             }}
+                            className="logo-text"
                         >
-                            <Logo 
-                                src={esmlogo} 
-                                alt="ESM Logo" 
-                                onClick={() => window.open('https://evolutionaryscale.ai/#', '_blank')} 
-                                style={{ cursor: 'pointer' }} 
-                            />
-                            <span 
-                                style={{ 
-                                    position: 'absolute', 
-                                    bottom: '-25px', 
-                                    left: '50%', 
-                                    transform: 'translateX(-50%)', 
-                                    visibility: 'hidden', 
-                                    opacity: 0, 
-                                    transition: 'visibility 0s, opacity 0.2s ease', 
-                                    color: '#fff' 
-                                }} 
-                                className="logo-text"
-                            >
-                                ESM-2
-                            </span>
-                        </LogoBox>
-                    </LogoContainer>
-
-
-                </Hero>
-                {isMobile ? null : <HeroImage src={gene} alt="Gene" />}
-            </HeroContainer>
+                            EC2
+                        </span>
+                    </LogoBox>
+                    <LogoBox
+                        style={{ position: 'relative' }}
+                        onMouseEnter={(e) => {
+                            const text = e.currentTarget.querySelector('.logo-text');
+                            if (text) {
+                                text.style.visibility = 'visible';
+                                text.style.opacity = '1';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            const text = e.currentTarget.querySelector('.logo-text');
+                            if (text) {
+                                text.style.visibility = 'hidden';
+                                text.style.opacity = '0';
+                            }
+                        }}
+                    >
+                        <Logo
+                            src={esmlogo}
+                            alt="ESM Logo"
+                            onClick={() => window.open('https://evolutionaryscale.ai/#', '_blank')}
+                            style={{ cursor: 'pointer' }}
+                        />
+                        <span
+                            style={{
+                                position: 'absolute',
+                                bottom: '-25px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                visibility: 'hidden',
+                                opacity: 0,
+                                transition: 'visibility 0s, opacity 0.2s ease',
+                                color: '#fff'
+                            }}
+                            className="logo-text"
+                        >
+                            ESM-2
+                        </span>
+                    </LogoBox>
+                </LogoContainer>
+            </Hero>
+            {isMobile ? null : <HeroImage src={gene} alt="Gene" />}
+        </HeroContainer>
             <Footer>
                 <FooterP>&copy; 2024 CHOFormer. All rights reserved.</FooterP>
             </Footer>
