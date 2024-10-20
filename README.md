@@ -58,7 +58,9 @@ CHOExp begins by accessing a dataset of 26,795 genes with corresponding RNA expr
 The core of CHOExp is an encoder-only transformer model with a dimensionality of 384, 8 layers, and 4 attention heads. The model is trained to predict protein expression levels based on the RNA expression data from the training set. CHOExp does not use any DNA foundation models as it's base, taking in the raw one-hot encoded vocab indices as input. Each DNA sequence is truncated/padded to a length of 1024 3-mer tokens (3072 total base pairs), and a classifier token <CLS> is a added at the start of the sequence. This input is processed through the transformer's attention and MLP processes. The output embedding of the <CLS> token is selected and processed through to a classification head, which consists of a linear layer and sigmoid activation function. After training the model on the training dataset for 10 epochs (including validation after every epoch), the expression model was evaluated on the test set and used to filter for high-expression CHO Genes when training CHOFormer.
 
 ## <h2 id="license">License and Credits</a> </h2>
-This was developed by: Rishab Jain<sup>*</sup>, Shrey Goel<sup>*</sup>, Vishrut Thoutam<sup>*</sup>, Dhruv Ramu, Balaji Rama, Darsh Mandera, Tyler Rose, Benjamin Chen
+This was developed by: Rishab Jain†, Shrey Goel†, Vishrut Thoutam†, Dhruv Ramu, Balaji Rama, Darsh Mandera, Tyler Rose, Benjamin Chen
+
+† These authors contributed equally
 
 Affiliations
 R.J. - Harvard College and Massachusetts General Hospital. Corresponding: rkjain@mgh.harvard.edu
@@ -69,8 +71,6 @@ B.R. - Rutgers University.
 D.M. - Duke University and Center for Virtual Imaging Trials.
 T.R. - Bindwell & Monta Vista High.
 B.C. - University of California San Diego and UCSD Skaggs.
-
-<sup>*</sup>These authors contributed equally
 
 This project is licensed under the MIT License, which allows for open use, modification, and distribution. For more details, please refer to the [LICENSE](LICENSE) file.
 
