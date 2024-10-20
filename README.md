@@ -10,11 +10,11 @@ Codon optimization, currently time-consuming in laboratory environments, is sign
 2. Filter sequences to be between 300 and 8000 base pairs (86632 sequences).
 3. Run `cd-hit-est` to cluster the sequences at 8 words and 0.9 nucleotide similarity (47713 sequences).
 3. Translate to amino acids, removing unnatural amino acids (47713 sequences)
-4. Use ESM-2-650M to extract embeddings from protein sequences.
-5. DNA sequence tokens are embedded (DNABert), and positional information is added. Split into 80-10-10.
-6. The model decodes the DNA sequence based on the input embeddings. It has a dimension of 128 with 2 layers and 4 attention heads.
+4. Use ESM-2-150M to extract embeddings from protein sequences.
+5. Protein and DNA mappings are split into training, validation, and test splits (80-10-10)
+6. The model decodes the DNA sequence based on the input embeddings from ESM2. It has a dimension of 128 with 2 layers and 4 attention heads.
 7. DNA Vocabulary Mapping: The decoder output is mapped to the DNA codon vocabulary.
-8. The final optimized DNA sequence is provided for high expression in CHO cells.
+8. The final optimized DNA sequence is generated for high expression in CHO cells.
 
 # CHO Expression Predictor (CHOExp)
 CHOExp is a transformer model designed to predict the expression levels of optimized DNA sequences in CHO cells based on RNA-Seq data, leveraging a correlation between RNA and protein expression. The model has 3 layers with a model dimension of 256 and 4 attention heads.
@@ -22,3 +22,7 @@ CHOExp is a transformer model designed to predict the expression levels of optim
 ## Technical Overview
 1. Accessed 26795 genes with RNA expression values.
 2. Removed genes with zero expression and only included the top 66% and those within three standard deviations — 13253 genes.
+3. Split expression data into training, validation, and test splits (80-10-10)
+4. Predict expression for proteins in the training set using an encoder-only transformer model (dimension of 384 with 8 layers and 4 attention heads)
+5. Evaluate the difference between ground truth and predicted expression values to improve the model during the training process
+6. CHOExp is then used to select high-expression CHO genes to use during CHOFormer's training process
