@@ -369,6 +369,7 @@ const Home = () => {
                 </p>
                 <h2>License and Credits</h2>
                 The code for this project is accessible on <a href="https://github.com/RJain12/choformer/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">GitHub</a>.
+                <p>This was developed by:</p>
                 <ol>
     <li>Rishab Jain</li>
     <li>Shrey Goel</li>
