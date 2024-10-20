@@ -65,7 +65,7 @@ This dataset has been uploaded to Polaris [here](https://polarishub.io/datasets/
 **CHOFormer: Optimizing Protein Expression in CHO Cells**
 Rishab Jain,<sup>*†1</sup> Shrey Goel,<sup>*2</sup> Vishrut Thoutam,<sup>*3</sup> Dhruv Ramu,<sup>4</sup> Darsh Mandera,<sup>2</sup> Balaji Rama,<sup>5</sup> Tyler Rose,<sup>6</sup> Benjamin Chen,<sup>7</sup>
 
-<sup>*</sup>These authors contributed equally
+<sup>*</sup> These authors contributed equally  
 <sup>†</sup> Corresponding Author: rkjain@mgh.harvard.edu
 
 **Affiliations:**
