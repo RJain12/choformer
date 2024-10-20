@@ -1,37 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 const CHOFormer = () => {
     const [loading, setLoading] = useState(false);
     const [output, setOutput] = useState(null);
-    const [progress, setProgress] = useState(0); // Progress state for the loading bar
-    const [fileName, setFileName] = useState(''); // State to store the chosen file name
+    const [input, setInput] = useState('');
+    const [fileName, setFileName] = useState('');
+    const [error, setError] = useState('');
 
-    const handleGoClick = () => {
+    const handleGoClick = async () => {
         setLoading(true);
-        setProgress(0); // Reset progress
-        setOutput(null); // Reset output
+        setError('');
+        setOutput(null);
 
-        const interval = setInterval(() => {
-            setProgress(prev => {
-                if (prev < 100) {
-                    return prev + 5; // Increment progress
-                }
-                clearInterval(interval);
-                return prev;
+        try {
+            const response = await axios.post('http://3.17.139.31:7999/choformer_inference', {
+                sequences: [input]
             });
-        }, 100); // Update every 100ms
-
-        // Simulate loading completion after 2 seconds
-        setTimeout(() => {
-            clearInterval(interval);
+            setOutput(response.data.sequences);
+        } catch (err) {
+            setError('An error occurred while processing your request. Please try again.');
+            console.error(err);
+        } finally {
             setLoading(false);
-            setOutput("Sample output data...");
-        }, 2000);
+        }
     };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setFileName(file ? file.name : '');
+        // Here you would typically read the file contents and set the input
+    };
+
+    const downloadFile = (content, fileType) => {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `output.${fileType}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     };
 
     const styles = {
@@ -41,245 +51,235 @@ const CHOFormer = () => {
             animation: 'gradient 15s ease infinite',
             color: '#fff',
             minHeight: '100vh',
-            padding: '0 2rem',
+            padding: '2rem',
             display: 'flex',
             flexDirection: 'column',
+            fontFamily: 'Arial, sans-serif',
         },
         header: {
-            background: 'transparent',
-            color: '#fff',
-            padding: '1rem 0',
-            width: '100%',
-            textAlign: 'left',
+            marginBottom: '2rem',
         },
-        navUl: {
-            listStyle: 'none',
+        nav: {
             display: 'flex',
             justifyContent: 'flex-start',
-            padding: 0,
         },
-        navLi: {
-            margin: '0 1rem',
-        },
-        navA: {
+        navItem: {
+            marginRight: '1.5rem',
             color: '#fff',
             textDecoration: 'none',
-        },
-        contentContainer: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            width: '100%',
-            height: '100%',
-        },
-        predictorContainer: {
-            display: 'flex',
-            flexDirection: 'column', // Stacks title and input field vertically
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
-            width: '100%',
-            maxWidth: '600px',
+            transition: 'color 0.3s',
+            fontSize: '1.1rem',
         },
         content: {
-            textAlign: 'left',
-            padding: '2rem 0',
-            background: 'transparent',
+            maxWidth: '800px',
+            margin: '0 auto',
             width: '100%',
-            maxWidth: '600px',
         },
-        contentH1: {
-            margin: '0 0 0.5rem 0', // Adds space below the heading
+        title: {
             fontSize: '2.5rem',
-            textAlign: 'left',
+            marginBottom: '1.5rem',
+            fontWeight: '700',
         },
-        contentP: {
-            fontSize: '1.5rem',
-            margin: '0 0 2rem 0',
-            textAlign: 'left',
+        card: {
+            background: 'rgba(28, 94, 225, 0.1)',
+            borderRadius: '8px',
+            padding: '1.5rem',
+            marginBottom: '1.5rem',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         },
         textarea: {
             width: '100%',
             padding: '0.5rem',
-            margin: '0.5rem 0',
+            marginBottom: '1rem',
             border: '1px solid #1c5ee1',
             borderRadius: '4px',
             fontSize: '1rem',
             color: '#fff',
-            backgroundColor: 'transparent',
-            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-            transition: 'border-color 0.3s',
-            minHeight: '150px', // Makes the textarea bigger
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            minHeight: '150px',
+            resize: 'vertical',
         },
-        textareaFocus: {
-            borderColor: '#fff',
-            outline: 'none',
+        fileInputContainer: {
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '1rem',
+        },
+        fileInput: {
+            display: 'none',
+        },
+        fileInputLabel: {
+            padding: '0.5rem 1rem',
+            backgroundColor: '#1c5ee1',
+            color: '#fff',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            marginRight: '1rem',
+            transition: 'background-color 0.3s',
+        },
+        fileName: {
+            fontSize: '0.9rem',
+        },
+        button: {
+            width: '100%',
+            padding: '0.75rem',
+            backgroundColor: '#1c5ee1',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '1rem',
+            cursor: 'pointer',
+            transition: 'background-color 0.3s',
         },
         loadingBar: {
             width: '100%',
-            height: '1rem',
+            height: '4px',
             backgroundColor: '#ccc',
-            margin: '1rem 0',
-            position: 'relative',
+            marginTop: '1rem',
             overflow: 'hidden',
+            position: 'relative',
         },
         loadingProgress: {
-            width: `${progress}%`,
+            width: '30%',
             height: '100%',
             backgroundColor: '#1c5ee1',
-            transition: 'width 0.1s ease-in-out',
+            position: 'absolute',
+            animation: 'loading 1.5s infinite',
         },
-        outputContainer: {
-            display: 'flex',
-            width: '100%',
-            marginTop: '2rem',
+        error: {
+            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            color: '#ff6b6b',
+            padding: '1rem',
+            borderRadius: '4px',
+            marginBottom: '1rem',
         },
         output: {
-            margin: '1rem 0',
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
             padding: '1rem',
-            backgroundColor: 'transparent',
-            color: '#fff',
-            width: '100%',
-            maxWidth: '800px',
-            textAlign: 'left',
-            borderRadius: '8px',
+            borderRadius: '4px',
+            whiteSpace: 'pre-wrap',
+            overflowX: 'auto',
         },
         footer: {
-            textAlign: 'left',
+            marginTop: 'auto',
+            textAlign: 'center',
             padding: '1rem 0',
-            background: 'transparent',
-            color: '#fff',
-            width: '100%',
         },
-        footerP: {
-            marginTop: '-25px',
-        },
-        button: {
+        downloadButton: {
             padding: '0.5rem 1rem',
             backgroundColor: '#1c5ee1',
             color: '#fff',
             border: 'none',
             borderRadius: '4px',
-            paddingBottom: '4px',
+            fontSize: '1rem',
             cursor: 'pointer',
-            marginTop: '1rem',
-            marginBottom: '1.5rem',
-            transition: 'background-color 0.3s, transform 0.3s',
-            fontSize: '1rem',
-            width: '100%',
-            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+            transition: 'background-color 0.3s',
+            marginRight: '1rem',
         },
-        buttonHover: {
-            backgroundColor: '#fff',
-            color: '#1c5ee1',
-            transform: 'scale(1.05)',
+        '@keyframes loading': {
+            '0%': { left: '-30%' },
+            '100%': { left: '100%' },
         },
-        // Custom styles for the file input
-        hiddenInput: {
-            display: 'none',
-        },
-        customFileButton: {
-            padding: '0.5rem 1rem',
-            backgroundColor: '#1c5ee1',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            marginTop: '1rem',
-            transition: 'background-color 0.3s, transform 0.3s',
-            fontSize: '1rem',
-            width: '100%',
-            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-            display: 'flex',
-            justifyContent: 'space-between',
-        },
-        fileName: {
-            fontSize: '1rem',
-            color: '#fff',
+        '@keyframes gradient': {
+            '0%': { backgroundPosition: '0% 50%' },
+            '50%': { backgroundPosition: '100% 50%' },
+            '100%': { backgroundPosition: '0% 50%' },
         },
     };
 
     return (
         <div style={styles.app}>
             <header style={styles.header}>
-                <nav>
-                    <ul style={styles.navUl}>
-                        <li style={styles.navLi}><a href="/" style={styles.navA}>Home</a></li>
-                        
-                        <li style={styles.navLi}><a href="/CHOFormer" style={styles.navA}>CHOFormer</a></li>
-                        <li style={styles.navLi}><a href="/CHOExp" style={styles.navA}>CHOExp</a></li>
-                        <li style={styles.navLi}><a href="/about" style={styles.navA}>About</a></li>
-                    </ul>
+                <nav style={styles.nav}>
+                    <a href="/" style={styles.navItem}>Home</a>
+                    <a href="/CHOFormer" style={styles.navItem}>CHOFormer</a>
+                    <a href="/CHOExp" style={styles.navItem}>CHOExp</a>
+                    <a href="/about" style={styles.navItem}>About</a>
                 </nav>
             </header>
-            <div style={styles.contentContainer}>
-                <main>
-                    <section style={styles.content}>
-                        <div style={styles.predictorContainer}>
-                            <h1 style={styles.contentH1}>CHO Expression Predictor</h1>
-                            <textarea
-                                placeholder="Enter sequence (e.g., FASTA format)"
-                                style={styles.textarea}
-                                onFocus={(e) => e.currentTarget.style.borderColor = styles.textareaFocus.borderColor}
-                                onBlur={(e) => e.currentTarget.style.borderColor = styles.textarea.border}
-                            />
-                        </div>
-                        {/* Hidden File Input */}
+
+            <main style={styles.content}>
+                <h1 style={styles.title}>CHO Expression Predictor</h1>
+                
+                <div style={styles.card}>
+                    <textarea
+                        style={styles.textarea}
+                        placeholder="Enter sequence (e.g., FASTA format)"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                    />
+                    
+                    <div style={styles.fileInputContainer}>
                         <input 
                             type="file" 
                             accept=".csv,.fasta,.exe" 
-                            style={styles.hiddenInput} 
                             id="fileInput" 
-                            onChange={handleFileChange} 
+                            onChange={handleFileChange}
+                            style={styles.fileInput}
                         />
-                        {/* Custom File Button */}
-                        <label htmlFor="fileInput" style={styles.customFileButton}>
-                            <span>Choose File</span>
-                            <span style={styles.fileName}>{fileName || "No file chosen"}</span>
+                        <label htmlFor="fileInput" style={styles.fileInputLabel}>
+                            Choose File
                         </label>
-                        <button 
-                            style={styles.button} 
-                            onClick={handleGoClick} 
-                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = styles.buttonHover.backgroundColor} 
-                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = styles.button.backgroundColor}
-                        >
-                            Go!
-                        </button>
-                        {loading && (
-                            <div style={styles.loadingBar}>
-                                <div style={styles.loadingProgress}></div>
-                            </div>
-                        )}
-                        {output && (
-                            <div style={styles.outputContainer}>
-                                <div style={styles.output}>
-                                    <p>{output}</p>
-                                    <button 
-                                        style={styles.button}
-                                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = styles.buttonHover.backgroundColor} 
-                                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = styles.button.backgroundColor}
-                                    >
-                                        Download as CSV
-                                    </button>
-                                    <button 
-                                        style={styles.button}
-                                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = styles.buttonHover.backgroundColor} 
-                                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = styles.button.backgroundColor}
-                                    >
-                                        Download as TXT
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                        <h2 style={styles.contentH1}>How to Use This Tool</h2>
-                        <p style={styles.contentP}>1. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                        <p style={styles.contentP}>2. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                        <p style={styles.contentP}>3. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-                    </section>
-                </main>
-            </div>
+                        <span style={styles.fileName}>{fileName || "No file chosen"}</span>
+                    </div>
+                    
+                    <button 
+                        onClick={handleGoClick} 
+                        style={styles.button} 
+                        disabled={loading}
+                    >
+                        {loading ? 'Processing...' : 'Predict'}
+                    </button>
+
+                    {loading && (
+                        <div style={styles.loadingBar}>
+                            <div style={styles.loadingProgress}></div>
+                        </div>
+                    )}
+                </div>
+
+                {error && (
+                    <div style={styles.error}>
+                        {error}
+                    </div>
+                )}
+
+                {output && (
+                    <div style={styles.card}>
+                        <h2 style={{...styles.title, fontSize: '1.5rem', marginBottom: '1rem'}}>Prediction Results</h2>
+                        <pre style={styles.output}>
+                            {output}
+                        </pre>
+                        <div style={{display: 'flex', justifyContent: 'flex-start', marginTop: '1rem'}}>
+                            <button 
+                                style={styles.downloadButton}
+                                onClick={() => downloadFile(output, 'fasta')}
+                            >
+                                Download FASTA
+                            </button>
+                            <button 
+                                style={styles.downloadButton}
+                                onClick={() => downloadFile(output, 'txt')}
+                            >
+                                Download TXT
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                <div style={styles.card}>
+                    <h2 style={{...styles.title, fontSize: '1.5rem', marginBottom: '1rem'}}>How to Use This Tool</h2>
+                    <ol style={{paddingLeft: '1.5rem'}}>
+                        <li>Enter your sequence data in FASTA format in the text area or upload a file.</li>
+                        <li>Click the "Predict" button to start the analysis.</li>
+                        <li>Wait for the results to appear. This may take a few moments.</li>
+                        <li>Once complete, you can view the results and download them in FASTA or TXT format.</li>
+                    </ol>
+                </div>
+            </main>
+
             <footer style={styles.footer}>
-                <p style={styles.footerP}>&copy; 2024 Dhruv Ramu. All rights reserved.</p>
+                <p>&copy; 2024 Dhruv Ramu. All rights reserved.</p>
             </footer>
         </div>
     );
