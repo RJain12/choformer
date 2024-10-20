@@ -324,8 +324,41 @@ const Home = () => {
                         <LogoBox>
                             <Logo src={openaiLogo} alt="OpenAI Logo" />
                         </LogoBox>
-                        <LogoBox>
+                        <LogoBox
+                        
+                        style={{ position: 'relative' }} 
+                        onMouseEnter={(e) => {
+                            const text = e.currentTarget.querySelector('.logo-text');
+                            if (text) {
+                                text.style.visibility = 'visible';
+                                text.style.opacity = '1';
+                            }
+                        }} 
+                        onMouseLeave={(e) => {
+                            const text = e.currentTarget.querySelector('.logo-text');
+                            if (text) {
+                                text.style.visibility = 'hidden';
+                                text.style.opacity = '0';
+                            }
+                        }}
+                        
+                        >
                             <Logo src={awsLogo} large alt="AWS Logo" />
+                            <span 
+                                style={{ 
+                                    position: 'absolute', 
+                                    bottom: '-25px', 
+                                    left: '50%', 
+                                    transform: 'translateX(-50%)', 
+                                    visibility: 'hidden', 
+                                    opacity: 0, 
+                                    transition: 'visibility 0s, opacity 0.2s ease', 
+                                    color: '#fff' 
+                                }} 
+                                className="logo-text"
+                            >
+                                EC2
+                            </span>
                         </LogoBox>
                         <LogoBox 
                             style={{ position: 'relative' }} 
@@ -363,7 +396,7 @@ const Home = () => {
                                 }} 
                                 className="logo-text"
                             >
-                                ESM-2
+                                ESM-2-650M
                             </span>
                         </LogoBox>
                     </LogoContainer>
