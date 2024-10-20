@@ -32,17 +32,14 @@ For **CHOExp**, upload or paste the DNA sequence; the output will be the protein
 ## <h2 id="benchmark">Evaluation</a> </h2>
 
 
-We utilized the Codon Adaptation Index (CAI) and Translational Efficiency Metrics (TAI) to evaluate the effectiveness of 3,000 codons optimized by CHOFormer.
-
-The mean CAI of the optimized sequences was 0.8471 with a standard deviation of 0.0874, compared to the original mean CAI of 0.6541 with a standard deviation of 0.0526. 
+The Codon Adaptation Index (CAI) is a key metric used to predict gene expression efficiency based on codon usage, strongly correlating with real-world protein expression levels (dos Reis et al.). Similarly, the Translational Adaptation Index (TAI) measures how efficiently a sequence can be translated into protein, offering insights into translational efficiency. By applying Anwar et al.'s (2023) methodology for protein abundance prediction, we observed significant improvements after CHOFormer optimization.
 
 <div style="display: flex; flex-direction: row; justify-content: space-between;">
     <img src="public/boxplot_cai.png" alt="CAI Boxplot" style="width: 45%;">
     <img src="public/boxplot_tai.png" alt="TAI Boxplot" style="width: 45%;">
 </div>
 
-The Codon Adaptation Index (CAI) predicts gene expression efficiency based on codon usage and correlates strongly with protein expression levels (dos Reis et al.), making it a reliable codon optimization metric. The Translational Adaptation Index (TAI) reflects how efficiently a sequence can be translated into protein, offering insights into translational efficiency. Using the methodology from Anwar et al. (2023), we found that CHOFormer-optimized sequences had a mean TAI of 0.682 (± 0.209), compared to the original 0.373 (± 0.112), showing significant improvements in both metrics.
-
+The mean CAI of the optimized sequences was 0.8471 (± 0.0874), compared to the original mean CAI of 0.6541 (± 0.0526). Likewise, the mean TAI of the optimized sequences was 0.682 (± 0.209), compared to the original TAI of 0.373 (± 0.112). These results demonstrate substantial improvements in gene expression efficiency and translation potential using CHOFormer.
 
 ## <h2 id="training">Training and Data Preprocessing</a> </h2>
 ### CHOFormer
