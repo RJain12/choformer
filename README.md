@@ -38,6 +38,11 @@ Codon Adaptation Index (CAI) is a widely used metric to predict the efficiency o
 
 The mean CAI of the optimized sequences was 0.8471 with a standard deviation of 0.0874, compared to the original mean CAI of 0.6541 with a standard deviation of 0.0526. 
 
+<div style="display: flex; flex-direction: row; justify-content: space-between;">
+    <img src="public/boxplot_cai.png" alt="CAI Boxplot" style="width: 45%;">
+    <img src="public/boxplot_tai.png" alt="TAI Boxplot" style="width: 45%;">
+</div>
+
 ![public/boxplot_cai.png](public/boxplot_cai.png)
 
 The Translational Adaptation Index (TAI) measures the efficiency with which a sequence can be translated into protein, providing insights into translational efficiency. We used the methodology proposed by Anwar et al. (2023), which provides a more accurate prediction of protein abundance in real-world applications. 
