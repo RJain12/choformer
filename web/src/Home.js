@@ -287,23 +287,27 @@ const Home = () => {
     return (
         <AppContainer>
             <Header>
-                <NavToggle onClick={toggleNav}>
-                    &#9776; {/* Hamburger Icon */}
-                </NavToggle>
-                <nav>
-                    <NavUl isOpen={isNavOpen}>
-                        {isMobile && (
-                            <CloseButton onClick={closeNav}>
-                                &times; {/* Close Icon */}
-                            </CloseButton>
-                        )}
-                        <NavLi><NavA href="/">Home</NavA></NavLi>
-                        <NavLi><NavA href="/CHOFormer">CHOFormer</NavA></NavLi>
-                        <NavLi><NavA href="/choexp">CHOExp</NavA></NavLi>
-                        <NavLi><NavA href="/about">About</NavA></NavLi>
-                    </NavUl>
-                </nav>
-            </Header>
+    <NavToggle onClick={toggleNav}>
+        &#9776; {/* Hamburger Icon */}
+    </NavToggle>
+    <a href="/">
+        <img src="/CHOFormer_logo.png" alt="CHOFormer Logo" style={{ height: '40px', marginRight: '20px' }} />
+    </a>
+    <nav>
+        <NavUl isOpen={isNavOpen}>
+            {isMobile && (
+                <CloseButton onClick={closeNav}>
+                    &times; {/* Close Icon */}
+                </CloseButton>
+            )}
+            <NavLi><NavA href="/">Home</NavA></NavLi>
+            <NavLi><NavA href="/CHOFormer">CHOFormer</NavA></NavLi>
+            <NavLi><NavA href="/choexp">CHOExp</NavA></NavLi>
+            <NavLi><NavA href="/about">About</NavA></NavLi>
+        </NavUl>
+    </nav>
+</Header>
+
             <HeroContainer>
                 <Hero>
                     <HeroH1>CHOFormer</HeroH1>
