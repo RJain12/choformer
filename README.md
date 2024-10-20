@@ -65,10 +65,9 @@ This dataset has been uploaded to Polaris [here](https://polarishub.io/datasets/
 **CHOFormer: Optimizing Protein Expression in CHO Cells**
 Rishab Jain,<sup>*†1</sup> Shrey Goel,<sup>*2</sup> Vishrut Thoutam,<sup>*3</sup> Dhruv Ramu,<sup>4</sup> Darsh Mandera,<sup>2</sup> Balaji Rama,<sup>5</sup> Tyler Rose,<sup>6</sup> Benjamin Chen,<sup>7</sup>
 
-<sup>*</sup>These authors contributed equally  
-<sup>†</sup>Corresponding Author: rkjain@mgh.harvard.edu
+<sup>1</sup>Harvard College
+<sup>2</sup>Duke University
 
-**Affiliations:**
 <sup>1</sup>Harvard College
 <sup>2</sup>Duke University
 <sup>3</sup>High Technology High School
@@ -76,5 +75,8 @@ Rishab Jain,<sup>*†1</sup> Shrey Goel,<sup>*2</sup> Vishrut Thoutam,<sup>*3</s
 <sup>5</sup>Rutgers University
 <sup>6</sup>Bindwell & Monta Vista High School
 <sup>7</sup>University of California, San Diego
+
+<sup>*</sup>These authors contributed equally  
+<sup>†</sup>Corresponding Author: rkjain@mgh.harvard.edu
 
 This project is licensed under the MIT License, which allows for open use, modification, and distribution. For more details, please refer to the [LICENSE](LICENSE) file.
